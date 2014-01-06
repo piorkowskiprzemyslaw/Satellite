@@ -36,16 +36,114 @@ GLUquadricObj* earthQuadricObject = gluNewQuadric( );
 GLUquadricObj* moonQuadricObject = gluNewQuadric( );
 GLUquadricObj* cloudsQuadricObject = gluNewQuadric( );
 
+static float fov = 45.0f;
+static float frame_no = 0;
+
+static float horizontalAngle = 3.14f;
+static float verticalAngle = 0.0f;
+static float speed = 0.05f;
+static float mouseSpeed = 0.005f;
+
+static glm::vec3 eye( 0.0f, 0.0f, 15.0f );
+static glm::vec3 point( 0.0f, 0.0f, 0.0f );
+static glm::vec3 up( 0.0f, 1.0f, 0.0f );
+static glm::vec3 right( 1.0f, 0.0f, 0.0f );
+static glm::vec3 direction( 0.0f, 0.0f, 1.0f );
+
+static int windowWidht = 0;
+static int windowHeight = 0;
+static int lastX = 0;
+static int lastY = 0;
+
+
+static GLfloat light_position[] = { 100.0f, 0.0f, 50.0f, 1.0f };
+
 /**
  * Handler dla openGL'a do obslugi klawiszy z klawiatury.
  */
 void handleKeypress( unsigned char key, int x, int y )
-{    //The current mouse coordinates
+{
 	switch ( key ) 
 	{
-		case 27: //Escape key
-			exit( 0 ); //Exit the program
+		case 'r': // reset pozycji kamery
+				fov		= 45.0f;
+				eye		= glm::vec3( 0.0f, 0.0f, 15.0f );
+				point	= glm::vec3( 0.0f, 0.0f, 0.0f );
+				up		= glm::vec3( 0.0f, 1.0f, 0.0f );
+				right	= glm::vec3( 1.0f, 0.0f, 0.0f );
+				horizontalAngle = 3.14f;
+				verticalAngle = 0.0f;
+				windowHeight = glutGet( GLUT_WINDOW_HEIGHT );
+				windowWidht = glutGet( GLUT_WINDOW_WIDTH );
+				lastX = windowWidht / 2;
+				lastY = windowHeight / 2;
+				glutWarpPointer( lastX, lastY );
+				break;
+		case 27: // Wyjscie z programu
+				exit( 0 );
 	}
+}
+
+/**
+ * Obsluga klawiszy specjalnych.
+ */
+void handleSpecialKeys( int key, int x, int y )
+{
+	switch ( key ) {
+		case GLUT_KEY_DOWN:
+			eye -= direction * speed;
+			break;
+		case GLUT_KEY_UP:
+			eye += direction * speed;
+			break;
+		case GLUT_KEY_LEFT:
+			eye -= right * speed;
+			break;
+		case GLUT_KEY_RIGHT:
+			eye += right * speed;
+			break;
+		default:
+			break;
+	}
+
+	point = eye + direction;
+}
+
+/**
+ * Odczytanie z myszki jej polozenia. Funkcja musi byc tak zbudowana, poniewaz kazdorazowe wywolywanie
+ * glutWrapPointer() powoduje nieskonczona petle - bug biblioteki glut... 
+ * More info here : http://stackoverflow.com/questions/728049/glutpassivemotionfunc-and-glutwarpmousepointer
+ */
+void computeFromMouse( int x, int y )
+{
+	int deltaX = x - lastX;
+	int deltaY = y - lastY;
+
+	lastX = x;
+	lastY = y;
+
+	if ( deltaX == 0 && deltaY == 0 ) return;
+
+	int windowX = glutGet( GLUT_WINDOW_X );
+	int windowY = glutGet( GLUT_WINDOW_Y );
+
+	int screenLeft = -windowX;
+	int screenTop = -windowY;
+	int screenRight = windowWidht - windowX;
+	int screenBottom = windowHeight - windowY;
+
+	if ( x <= screenLeft + 10 || ( y ) <= screenTop + 10 || x >= screenRight - 10 || y >= screenBottom - 10 ) {
+		lastX = windowWidht / 2;
+		lastY = windowHeight / 2;
+		glutWarpPointer( lastX, lastY );
+	}
+
+	horizontalAngle	+= mouseSpeed * float( deltaX );
+	verticalAngle	+= mouseSpeed * float( deltaY );
+	direction = glm::vec3( cos( verticalAngle ) * sin( horizontalAngle ), sin( verticalAngle ), cos( verticalAngle ) * cos( horizontalAngle ) );
+	point = eye + direction;
+	right = glm::vec3( sin( horizontalAngle - 3.14f / 2.0f ), 0.0f, cos( horizontalAngle - 3.14f / 2.0f ) );
+	up = glm::cross( right, direction );
 }
 
 /**
@@ -90,26 +188,24 @@ void initDevIL( )
 void init( )
 {
 	//Okreslenie wlasciwosci materialow.
-	GLfloat mat_ambient[] = { 0.3, 0.3, 0.3, 1.0 };
-	GLfloat mat_specular[] = { 1.0, 1.0, 1.0, 1.0 };
+	GLfloat mat_ambient[] = { 0.3f, 0.3f, 0.3f, 1.0f };
+	GLfloat mat_specular[] = { 1.0f, 1.0f, 1.0f, 1.0f };
 	
 	glMaterialfv( GL_FRONT, GL_AMBIENT, mat_ambient );
 	glMaterialfv( GL_FRONT, GL_SPECULAR, mat_specular );
 	glMaterialf( GL_FRONT, GL_SHININESS, 50.0 );
 	
 	//Okreslenie swiatel, otoczenia, glownego...
-	GLfloat light_position[] = { 5.0, 1.0, 5.0, 1.0 };
-	GLfloat lm_ambient[] = { 0.2, 0.2, 0.2, 1.0f };
+	GLfloat lm_ambient[] = { 0.2f, 0.2f, 0.2f, 1.0f };
 
 	glLightfv( GL_LIGHT0, GL_POSITION, light_position );
 	glLightModelfv( GL_LIGHT_MODEL_AMBIENT, lm_ambient );
-	
-	
-	glShadeModel( GL_SMOOTH );
-
 	glEnable( GL_LIGHTING );
 	glEnable( GL_LIGHT0 );
+	
 
+	glEnable( GL_TEXTURE_2D );
+	glShadeModel( GL_SMOOTH );
 	glDepthFunc( GL_LESS );
 	glEnable( GL_DEPTH_TEST );
 	glEnable( GL_NORMALIZE );
@@ -147,32 +243,37 @@ void init( )
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
 	ilutGLTexImage( 0 );
+
+	glutSetCursor( GLUT_CURSOR_NONE );
 }
 
-void displayObjects( float angle )
+/**
+ * Wyswietlanie elementow otoczenia - planet.
+ */
+void displayEnviroment( float angle )
 {
 	GLfloat earth_diffuse[] = { 1.0f, 1.0f, 1.0f, 1.0f };
-	GLfloat moon_diffuse[] = { 1.0, 1.0, 1.0, 1.0 };
+	GLfloat moon_diffuse[] = { 1.0f, 1.0f, 1.0f, 1.0f };
 	GLfloat clouds_blend[] = { 0.0f, 0.0f, 0.0f, 1.0f };
 	GLfloat clouds_shinines[] = { 0.0f };
 	GLfloat clouds_specular[] = { 0.0f, 0.0f, 0.0f, 1.0f };
 	GLfloat clouds_emission[] = { 0.0f, 0.0f, 0.0f, 1.0f };
 	GLfloat clouds_diffuse[] = { 0.3f, 0.3f, 0.3f, 1.0f };
 
-	glClearColor( 0.0f, 0.0f, 0.0f, 0.0f );
-	glEnable( GL_TEXTURE_2D );
 	glPushMatrix( );
+
+	glTranslatef( 0.0f, 0.0f, -4.0f );
+	glRotatef( angle / 360.0f, 0.0f, 1.0f, 0.0f );
 
 	// ZIEMIA
 			glPushMatrix( );
-				glTranslatef( -3.0, -0.8, 0.0 );
-				glRotatef( 90, 1.0, 0.0, 0.0 );
+	
+				glRotatef( 90.0f, 1.0f, 0.0f, 0.0f );
 				
 				glPushMatrix( );
-					glRotatef( -( angle/720 + 90), 0.0, 0.0, 1.0 );
-					//glTexEnvf( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_BLEND );
+				glRotatef( -( angle / 720.0f + 90.0f ), 0.0f, 0.0f, 1.0f );
 					glBindTexture( GL_TEXTURE_2D, earth );
-					glMaterialfv( GL_FRONT, GL_DIFFUSE, earth_diffuse ); // ???
+					glMaterialfv( GL_FRONT, GL_DIFFUSE, earth_diffuse );
 					gluSphere( earthQuadricObject, 4.5, 100, 100 );
 				
 				glPopMatrix( );
@@ -188,14 +289,13 @@ void displayObjects( float angle )
 					glTexEnvfv( GL_TEXTURE_ENV, GL_BLEND, clouds_blend );
 					glBindTexture( GL_TEXTURE_2D, clouds );
 					gluSphere( cloudsQuadricObject, 4.51, 1000, 1000 );
-
 					glDisable( GL_BLEND );
 				glPopMatrix( );
 				
 	// KSIEZYC
 				glPushMatrix( );
-					glRotatef( -angle/90 , 0.0, 0.0, 1.0 );
-					glTranslatef( 15.0f, 0.0, 0.0 );
+					glRotatef( -angle / 360.0f - 55.0f, 0.0f, 0.0f, 1.0f );
+					glTranslatef( 40.0f, 0.0f, 0.0f );
 					glRotatef( angle / 720 - 90, 0.0f, 0.0f, 1.0f );
 					glBindTexture( GL_TEXTURE_2D, moon );
 					glMaterialfv( GL_FRONT, GL_DIFFUSE, moon_diffuse );
@@ -205,45 +305,61 @@ void displayObjects( float angle )
 
 	glPopMatrix( );
 	glFlush( );
-	glDisable( GL_TEXTURE_2D );
 }
 
+/**
+ * Tutaj wyswietlanie rakiety, etc...
+ */
+void displayObjects( float frame_no )
+{
+
+}
+
+/**
+ * Wyswietlanie wszystkiego...
+ */
 void display( )
 {
-	static int frame_no = 0;
+	if ( frame_no < 720*720 ) frame_no+= 4; else frame_no = 0;
+	
 	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-	if ( frame_no < 720*720 ) frame_no++; else frame_no = 0;
-	glMatrixMode( GL_PROJECTION );
-	glPushMatrix( );
-	//glRotatef( ( float ) frame_no, 0.0, 1.0, 0.0 );
-		glMatrixMode( GL_MODELVIEW );
-		displayObjects( frame_no );
-		glMatrixMode( GL_PROJECTION );
-	glPopMatrix( );
-	glFlush( );
+	glLoadIdentity( );
+	/* Transformacje widoku... */
+	gluLookAt( eye.x, eye.y, eye.z, point.x, point.y, point.z, up.x, up.y, up.z );
+	glLightfv( GL_LIGHT0, GL_POSITION, light_position );
+	displayEnviroment( (float)frame_no );
+	displayObjects( (float) frame_no );
 	glutSwapBuffers( );
 }
 
+/**
+ * Funkcja wywolywana podczas zmiany rozmiaru okna...
+ */
 void reshape( GLsizei w, GLsizei h )
 {
+	// Uaktualnienie pozycji kursora...
+	windowHeight = glutGet( GLUT_WINDOW_HEIGHT );
+	windowWidht = glutGet( GLUT_WINDOW_WIDTH );
+	lastX = windowWidht / 2;
+	lastY = windowHeight / 2;
+	glutWarpPointer( lastX, lastY );
+	
 	if ( h > 0 && w > 0 ) {
 		glViewport( 0, 0, w, h );
 		glMatrixMode( GL_PROJECTION );
 		glLoadIdentity( );
 		if ( w <= h ) {
-			//gluPerspective( 45.0, ( double ) h / ( double ) w, 11.0, 18.0 );
-			glFrustum( -2.25, 2.25, -2.25*h / w, 2.25*h / w, 10.0, 100.0);
-			//glOrtho( -2.25, 2.25, -2.25*h/w, 2.25*h/w, -10.0, 10.0 );
+			gluPerspective( fov, ( double ) h / ( double ) w, 0.01f, 100.0f );
 		} else {
-			//gluPerspective( 45.0, ( double ) w / ( double ) h, 11.0, 18.0 );
-			glFrustum( -2.25*w / h, 2.25*w / h, -2.25, 2.25, 10.0, 100.0 );
-			//glOrtho( -2.25*w/h, 2.25*w/h, -2.25, 2.25, -10.0, 10.0 );
+			gluPerspective( fov, ( double ) w / ( double ) h, 0.01f, 100.0f );
 		}
-		glTranslatef( 0.0, 0.0, -16.0 );
 		glMatrixMode( GL_MODELVIEW );
 	}
 }
 
+/**
+ * Rozpoczecie wykonania...
+ */
 int main( int argc, char** argv )
 {
 	glutInit( &argc, argv );
@@ -252,12 +368,21 @@ int main( int argc, char** argv )
 	glutInitWindowSize( 800, 600 );
 	glutCreateWindow( "Satellite" );
 	glutFullScreen( );
+	
+	//uaktualnienie pozycji kursora...
+	windowHeight = glutGet( GLUT_WINDOW_HEIGHT );
+	windowWidht = glutGet( GLUT_WINDOW_WIDTH );
+	lastX = windowWidht / 2;
+	lastY = windowHeight / 2;
+	glutWarpPointer( lastX, lastY );
+
+	init( );
 	glutDisplayFunc( display );
 	glutReshapeFunc( reshape );
 	glutIdleFunc( display );
 	glutKeyboardFunc( handleKeypress );
-
-	init( );
+	glutSpecialFunc( handleSpecialKeys );
+	glutPassiveMotionFunc( computeFromMouse );
 	glutMainLoop( );
 
 	return 0;
