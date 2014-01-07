@@ -35,6 +35,7 @@ ILubyte * cloudsData;
 GLUquadricObj* earthQuadricObject = gluNewQuadric( );
 GLUquadricObj* moonQuadricObject = gluNewQuadric( );
 GLUquadricObj* cloudsQuadricObject = gluNewQuadric( );
+GLUquadricObj* qdo = gluNewQuadric( );
 
 static float fov = 45.0f;
 static float frame_no = 0;
@@ -44,7 +45,7 @@ static float verticalAngle = 0.0f;
 static float speed = 0.05f;
 static float mouseSpeed = 0.005f;
 
-static glm::vec3 eye( 0.0f, 0.0f, 15.0f );
+static glm::vec3 eye( 0.0f, 0.0f, 8.0f );
 static glm::vec3 point( 0.0f, 0.0f, 0.0f );
 static glm::vec3 up( 0.0f, 1.0f, 0.0f );
 static glm::vec3 right( 1.0f, 0.0f, 0.0f );
@@ -54,7 +55,6 @@ static int windowWidht = 0;
 static int windowHeight = 0;
 static int lastX = 0;
 static int lastY = 0;
-
 
 static GLfloat light_position[] = { 100.0f, 0.0f, 50.0f, 1.0f };
 
@@ -67,7 +67,7 @@ void handleKeypress( unsigned char key, int x, int y )
 	{
 		case 'r': // reset pozycji kamery
 				fov		= 45.0f;
-				eye		= glm::vec3( 0.0f, 0.0f, 15.0f );
+				eye		= glm::vec3( 0.0f, 0.0f, 8.0f );
 				point	= glm::vec3( 0.0f, 0.0f, 0.0f );
 				up		= glm::vec3( 0.0f, 1.0f, 0.0f );
 				right	= glm::vec3( 1.0f, 0.0f, 0.0f );
@@ -258,12 +258,12 @@ void displayEnviroment( float angle )
 	GLfloat clouds_shinines[] = { 0.0f };
 	GLfloat clouds_specular[] = { 0.0f, 0.0f, 0.0f, 1.0f };
 	GLfloat clouds_emission[] = { 0.0f, 0.0f, 0.0f, 1.0f };
-	GLfloat clouds_diffuse[] = { 0.3f, 0.3f, 0.3f, 1.0f };
+	GLfloat clouds_diffuse[] = { 0.25f, 0.25f, 0.25f, 1.0f };
 
 	glPushMatrix( );
 
-	glTranslatef( 0.0f, 0.0f, -4.0f );
-	glRotatef( angle / 360.0f, 0.0f, 1.0f, 0.0f );
+	glTranslatef( 0.0f, 0.0f, -6.0f );
+	glRotatef( 4 *angle / 90.0f, 0.0f, 1.0f, 0.0f );
 
 	// ZIEMIA
 			glPushMatrix( );
@@ -304,7 +304,6 @@ void displayEnviroment( float angle )
 			glPopMatrix( );
 
 	glPopMatrix( );
-	glFlush( );
 }
 
 /**
@@ -312,7 +311,191 @@ void displayEnviroment( float angle )
  */
 void displayObjects( float frame_no )
 {
+	GLfloat diffuse[] = { 1.0f, 1.0f, 0.0f, 1.0f };
+	GLdouble plane_eq0[] = { 0.0f, 0.0f, -1.0f, 0.0f };
 
+
+	glPushMatrix( );
+
+	//glDisable( GL_LIGHTING );
+	glDisable( GL_CULL_FACE );
+
+	glScalef( 0.2f, 0.2f, 0.2f );
+	glRotatef( -90.0f, 0.0f, 1.0f, 0.0f );
+
+		// caly model rakiery
+		glPushMatrix( );
+
+				glPushMatrix( );
+				// modl napedowy. CZERWONY
+					glColor3f( 1.0f, 0.0f, 0.0f );
+					glTranslatef( 0.0f, 0.0f, -7.05f );
+					gluDisk( qdo, 0.0f, 0.5f, 30, 20 );
+					//gluCylinder( qdo, 0.5f, 0.5f, 2.0f, 30, 30 );
+					glutWireCylinder( 0.5f, 2.0f, 30, 30 );
+
+					//silnik gora
+					glPushMatrix( );
+						glTranslatef( 0.0f, 0.65f, 0.0f );
+						//gluCylinder( qdo, 0.1f, 0.1f, 1.5f, 30, 30 );
+						gluDisk( qdo, 0.0f, 0.15f, 30, 10 );
+						glutWireCylinder( 0.15f, 1.5f, 30, 30 );
+					glPopMatrix( );
+
+					// silnik prawo gora
+					glPushMatrix( );
+						glTranslatef( 0.468f, 0.468f, 0.0f );
+						//gluCylinder( qdo, 0.1f, 0.1f, 1.5f, 30, 30 );
+						gluDisk( qdo, 0.0f, 0.15f, 30, 10 );
+						glutWireCylinder( 0.15f, 1.5f, 30, 30 );
+					glPopMatrix( );
+
+					// silnik lewo gora
+					glPushMatrix( );
+						glTranslatef( -0.468f, 0.468f, 0.0f );
+						//gluCylinder( qdo, 0.1f, 0.1f, 1.5f, 30, 30 );
+						gluDisk( qdo, 0.0f, 0.15f, 30, 10 );
+						glutWireCylinder( 0.15f, 1.5f, 30, 30 );
+					glPopMatrix( );
+
+					//silnik dol
+					glPushMatrix( );
+						glTranslatef( 0.0f, -0.65f, 0.0f );
+						//gluCylinder( qdo, 0.1f, 0.1f, 1.5f, 30, 30 );
+						gluDisk( qdo, 0.0f, 0.15f, 30, 10 );
+						glutWireCylinder( 0.15f, 1.5f, 30, 30 );
+					glPopMatrix( );
+
+					// silnik prawo dol
+					glPushMatrix( );
+						glTranslatef( 0.468f, -0.468f, 0.0f );
+						//gluCylinder( qdo, 0.1f, 0.1f, 1.5f, 30, 30 );
+						gluDisk( qdo, 0.0f, 0.15f, 30, 10 );
+						glutWireCylinder( 0.15f, 1.5f, 30, 30 );
+					glPopMatrix( );
+
+					// silnik lewo dol
+					glPushMatrix( );
+						glTranslatef( -0.468f, -0.468f, 0.0f );
+						//gluCylinder( qdo, 0.1f, 0.1f, 1.5f, 30, 30 );
+						gluDisk( qdo, 0.0f, 0.15f, 30, 10 );
+						glutWireCylinder( 0.15f, 1.5f, 30, 30 );
+					glPopMatrix( );
+
+					// silnik prawo
+					glPushMatrix( );
+						glTranslatef( 0.65f, 0.0f, 0.0f );
+						//gluCylinder( qdo, 0.1f, 0.1f, 1.5f, 30, 30 );
+						gluDisk( qdo, 0.0f, 0.15f, 30, 10 );
+						glutWireCylinder( 0.15f, 1.5f, 30, 30 );
+					glPopMatrix( );
+
+					//silnik lewo
+					glPushMatrix( );
+						glTranslatef( -0.65f, 0.0f, 0.0f );
+						//gluCylinder( qdo, 0.1f, 0.1f, 1.5f, 30, 30 );
+						gluDisk( qdo, 0.0f, 0.15f, 30, 10 );
+						glutWireCylinder( 0.15f, 1.5f, 30, 30 );
+					glPopMatrix( );
+				
+				// modul silnikowy. czerwony.
+				glPopMatrix( );
+
+				glPushMatrix( );
+				// lacznik. bialy.
+					glTranslatef( 0.0f, 0.0f, -4.65f );
+					glPushMatrix( );
+						glColor3f( 1.0f, 1.0f, 1.0f );
+						glClipPlane( GL_CLIP_PLANE0, plane_eq0 );
+						glEnable( GL_CLIP_PLANE0 );
+						glTranslatef( 0.0f, 0.0f, -0.4f );
+						glutWireCone( 0.5f, 2.0f, 30, 20 );
+						glDisable( GL_CLIP_PLANE0 );
+					glPopMatrix( );
+				// lacznik. bialy.
+				glPopMatrix( );
+
+				glPushMatrix( );
+				// modul paliwa. Zielony
+
+					glTranslatef( 0.0f, 0.0f, -4.65f );
+					glColor3f( 0.0f, 1.0f, 0.0f );
+					glutWireCylinder( 0.4f, 3.0f, 30, 30 );
+
+				// modul paliwa. Zielony
+				glPopMatrix( );
+
+				glPushMatrix( );
+				// modul satelity. Niebieski
+
+				glTranslatef( 0.0f, 0.0f, -1.4f );
+					glPushMatrix( );
+						glColor3f( 0.0f, 0.0f, 1.0f );
+						glClipPlane( GL_CLIP_PLANE0, plane_eq0 );
+						glEnable( GL_CLIP_PLANE0 );
+						glTranslatef( 0.0f, 0.0f, -0.25f );
+						glutWireCone( 0.4f, 0.75f, 30, 20 );
+						glDisable( GL_CLIP_PLANE0 );
+					glPopMatrix( );
+
+				// modul satelity
+				glPopMatrix( );
+
+				glPushMatrix( );
+				// modul satelity. Czerwony
+
+					glTranslatef( 0.0f, 0.0f, -1.4f );
+					glColor3f( 1.0f, 0.0f, 0.0f );
+					glutWireCylinder( 0.265f, 0.5f, 30, 10 );
+		
+				// modul satelity. Czerwony
+				glPopMatrix( );
+
+				glPushMatrix( );
+				// modul satelity. Zielony.
+				
+					glTranslatef( 0.0f, 0.0f, -0.7f );
+					glPushMatrix( );
+						glColor3f( 0.0f, 1.0f, 0.0f );
+						glClipPlane( GL_CLIP_PLANE0, plane_eq0 );
+						glEnable( GL_CLIP_PLANE0 );
+						glTranslatef( 0.0f, 0.0f, -0.2f );
+						glutWireCone( 0.265f, 0.3f, 30, 10 );
+						glDisable( GL_CLIP_PLANE0 );
+					glPopMatrix( );
+
+				// modul satelity. Zielony.
+				glPopMatrix( );
+
+				glPushMatrix( );
+				// czubek rakiety. niebieski.
+		
+					glTranslatef( 0.0f, 0.0f, -0.7f );
+					glColor3f( 0.0f, 0.0f, 1.0f );
+					glutWireCylinder( 0.088f, 0.3f, 30, 10 );
+		
+				// czubek rakiety. niebieski.
+				glPopMatrix( );
+
+				glPushMatrix( );
+				// ostrze czubka. Czerwony.
+				
+					glTranslatef( 0.0f, 0.0f, -0.4f );
+					glColor3f( 1.0f, 0.0f, 0.0f );
+					glutWireCone( 0.088f, 0.4f, 30, 10 );
+
+				// ostrze czubka. Czerwony.
+				glPopMatrix( );
+
+		// caly model rakiety.
+		glPopMatrix( );
+
+
+
+	glEnable( GL_CULL_FACE );
+	//glEnable( GL_LIGHTING );
+
+	glPopMatrix( );
 }
 
 /**
@@ -320,15 +503,20 @@ void displayObjects( float frame_no )
  */
 void display( )
 {
-	if ( frame_no < 720*720 ) frame_no+= 4; else frame_no = 0;
+	if ( frame_no < 720*720 ) frame_no+= 1; else frame_no = 0;
 	
 	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+
 	glLoadIdentity( );
+
 	/* Transformacje widoku... */
 	gluLookAt( eye.x, eye.y, eye.z, point.x, point.y, point.z, up.x, up.y, up.z );
 	glLightfv( GL_LIGHT0, GL_POSITION, light_position );
+
 	displayEnviroment( (float)frame_no );
 	displayObjects( (float) frame_no );
+
+	glFlush( );
 	glutSwapBuffers( );
 }
 
@@ -377,12 +565,14 @@ int main( int argc, char** argv )
 	glutWarpPointer( lastX, lastY );
 
 	init( );
+
 	glutDisplayFunc( display );
 	glutReshapeFunc( reshape );
 	glutIdleFunc( display );
 	glutKeyboardFunc( handleKeypress );
 	glutSpecialFunc( handleSpecialKeys );
 	glutPassiveMotionFunc( computeFromMouse );
+	
 	glutMainLoop( );
 
 	return 0;
