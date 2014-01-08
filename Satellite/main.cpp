@@ -4,7 +4,7 @@
  */
 #include <Windows.h>
 #include <GL\glew.h>
-#include <GL\freeglut.h>
+#include <GL\glut.h>
 #include <glm\glm.hpp>
 #include <glm\gtx\transform.hpp>
 #include <IL\il.h>
@@ -15,37 +15,63 @@
 char * earthLocation = "earth.jpg";
 char * moonLocation = "moon.jpg";
 char * cloudsLocation = "clouds.jpg";
+char * modulLocation = "modul.jpg";
+char * modul1Location = "modul1.jpg";
+char * modul2Location = "modul2.jpg";
+char * modul3Location = "modul3.jpg";
+char * engineLocation = "engine.jpg";
 
 GLsizei earthImageHeight, earthImageWidth;
 GLsizei moonImageHeight, moonImageWidth;
 GLsizei cloudsImageHeight, cloudsImageWidth;
+GLsizei modulImageHeight, modulImageWidth;
+GLsizei modul1ImageHeight, modul1ImageWidth;
+GLsizei modul2ImageHeight, modul2ImageWidth;
+GLsizei modul3ImageHeight, modul3ImageWidth;
+GLsizei engineImageHeight, engineImageWidth;
 
 static GLuint earth;
 static GLuint moon;
 static GLuint clouds;
+static GLuint modul;
+static GLuint modul1;
+static GLuint modul2;
+static GLuint modul3;
+static GLuint engine;
 
 static ILuint ilEarth;
 static ILuint ilMoon;
 static ILuint ilClouds;
+static ILuint ilModul;
+static ILuint ilModul1;
+static ILuint ilModul2;
+static ILuint ilModul3;
+static ILuint ilEngine;
 
 ILubyte * earthData;
 ILubyte * moonData;
 ILubyte * cloudsData;
+ILubyte * moduleData;
+ILubyte * module1Data;
+ILubyte * module2Data;
+ILubyte * module3Data;
+ILubyte * engineData;
 
 GLUquadricObj* earthQuadricObject = gluNewQuadric( );
 GLUquadricObj* moonQuadricObject = gluNewQuadric( );
 GLUquadricObj* cloudsQuadricObject = gluNewQuadric( );
 GLUquadricObj* qdo = gluNewQuadric( );
+GLUquadricObj* moduleQuadricObject = gluNewQuadric( );
 
 static float fov = 45.0f;
-static float frame_no = 0;
+static float frame_no = 0.0f;
 
 static float horizontalAngle = 3.14f;
 static float verticalAngle = 0.0f;
 static float speed = 0.05f;
 static float mouseSpeed = 0.005f;
 
-static glm::vec3 eye( 0.0f, 0.0f, 8.0f );
+static glm::vec3 eye( 0.0f, 0.0f, 4.0f );
 static glm::vec3 point( 0.0f, 0.0f, 0.0f );
 static glm::vec3 up( 0.0f, 1.0f, 0.0f );
 static glm::vec3 right( 1.0f, 0.0f, 0.0f );
@@ -67,7 +93,7 @@ void handleKeypress( unsigned char key, int x, int y )
 	{
 		case 'r': // reset pozycji kamery
 				fov		= 45.0f;
-				eye		= glm::vec3( 0.0f, 0.0f, 8.0f );
+				eye		= glm::vec3( 0.0f, 0.0f, 4.0f );
 				point	= glm::vec3( 0.0f, 0.0f, 0.0f );
 				up		= glm::vec3( 0.0f, 1.0f, 0.0f );
 				right	= glm::vec3( 1.0f, 0.0f, 0.0f );
@@ -180,6 +206,46 @@ void initDevIL( )
 	cloudsImageHeight = ilGetInteger( IL_IMAGE_HEIGHT );
 	cloudsImageWidth = ilGetInteger( IL_IMAGE_WIDTH );
 	cloudsData = ilGetData( );
+	/* Wczytanie tekstury modulu z pliku. */
+	ilGenImages( 1, &ilModul );
+	ilBindImage( ilModul );
+	ilutGLBindTexImage( );
+	ilLoadImage( modulLocation );
+	modulImageHeight = ilGetInteger( IL_IMAGE_HEIGHT );
+	modulImageWidth = ilGetInteger( IL_IMAGE_WIDTH );
+	moduleData = ilGetData( );
+	/* Wczytanie tekstury modulu1 z pliku. */
+	ilGenImages( 1, &ilModul1 );
+	ilBindImage( ilModul1 );
+	ilutGLBindTexImage( );
+	ilLoadImage( modul1Location );
+	modul1ImageHeight = ilGetInteger( IL_IMAGE_HEIGHT );
+	modul1ImageWidth = ilGetInteger( IL_IMAGE_WIDTH );
+	module1Data = ilGetData( );
+	/* Wczytanie tekstury modulu2 z pliku. */
+	ilGenImages( 1, &ilModul2 );
+	ilBindImage( ilModul2 );
+	ilutGLBindTexImage( );
+	ilLoadImage( modul2Location );
+	modul2ImageHeight = ilGetInteger( IL_IMAGE_HEIGHT );
+	modul2ImageWidth = ilGetInteger( IL_IMAGE_WIDTH );
+	module2Data = ilGetData( );
+	/* Wczytanie tekstury modulu3 z pliku. */
+	ilGenImages( 1, &ilModul3 );
+	ilBindImage( ilModul3 );
+	ilutGLBindTexImage( );
+	ilLoadImage( modul3Location );
+	modul3ImageHeight = ilGetInteger( IL_IMAGE_HEIGHT );
+	modul3ImageWidth = ilGetInteger( IL_IMAGE_WIDTH );
+	module3Data = ilGetData( );
+	/* Wczytanie tekstury silnika z pliku. */
+	ilGenImages( 1, &ilEngine );
+	ilBindImage( ilEngine );
+	ilutGLBindTexImage( );
+	ilLoadImage( engineLocation );
+	engineImageHeight = ilGetInteger( IL_IMAGE_HEIGHT );
+	engineImageWidth = ilGetInteger( IL_IMAGE_WIDTH );
+	engineData = ilGetData( );
 }
 
 /**
@@ -189,11 +255,8 @@ void init( )
 {
 	//Okreslenie wlasciwosci materialow.
 	GLfloat mat_ambient[] = { 0.3f, 0.3f, 0.3f, 1.0f };
-	GLfloat mat_specular[] = { 1.0f, 1.0f, 1.0f, 1.0f };
 	
 	glMaterialfv( GL_FRONT, GL_AMBIENT, mat_ambient );
-	glMaterialfv( GL_FRONT, GL_SPECULAR, mat_specular );
-	glMaterialf( GL_FRONT, GL_SHININESS, 50.0 );
 	
 	//Okreslenie swiatel, otoczenia, glownego...
 	GLfloat lm_ambient[] = { 0.2f, 0.2f, 0.2f, 1.0f };
@@ -210,7 +273,18 @@ void init( )
 	glEnable( GL_DEPTH_TEST );
 	glEnable( GL_NORMALIZE );
 	glEnable( GL_CULL_FACE );
-	glEnable( GL_COLOR );
+
+	gluQuadricNormals( earthQuadricObject, GLU_SMOOTH );
+	gluQuadricNormals( moonQuadricObject, GLU_SMOOTH );
+	gluQuadricNormals( cloudsQuadricObject, GLU_SMOOTH );
+	gluQuadricNormals( qdo, GLU_SMOOTH );
+	gluQuadricNormals( moduleQuadricObject, GLU_SMOOTH );
+
+	gluQuadricDrawStyle( earthQuadricObject, GLU_FILL );
+	gluQuadricDrawStyle( moonQuadricObject, GLU_FILL );
+	gluQuadricDrawStyle( cloudsQuadricObject, GLU_FILL );
+	gluQuadricDrawStyle( qdo, GLU_FILL );
+	gluQuadricDrawStyle( moduleQuadricObject, GLU_FILL );
 
 	initDevIL( );
 
@@ -238,6 +312,56 @@ void init( )
 	ilBindImage( ilClouds );
 	glBindTexture( GL_TEXTURE_2D, clouds );
 	gluQuadricTexture( cloudsQuadricObject, GL_TRUE );
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+	ilutGLTexImage( 0 );
+
+	glGenTextures( 1, &modul );
+	ilBindImage( ilModul );
+	glBindTexture( GL_TEXTURE_2D, modul );
+	gluQuadricTexture( moduleQuadricObject, GL_TRUE );
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+	ilutGLTexImage( 0 );
+
+	glGenTextures( 1, &modul1 );
+	ilBindImage( ilModul1 );
+	glBindTexture( GL_TEXTURE_2D, modul1 );
+	gluQuadricTexture( moduleQuadricObject, GL_TRUE );
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+	ilutGLTexImage( 0 );
+
+	glGenTextures( 1, &modul2 );
+	ilBindImage( ilModul2 );
+	glBindTexture( GL_TEXTURE_2D, modul2 );
+	gluQuadricTexture( moduleQuadricObject, GL_TRUE );
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+	ilutGLTexImage( 0 );
+
+	glGenTextures( 1, &modul3 );
+	ilBindImage( ilModul3 );
+	glBindTexture( GL_TEXTURE_2D, modul3 );
+	gluQuadricTexture( moduleQuadricObject, GL_TRUE );
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+	ilutGLTexImage( 0 );
+
+	glGenTextures( 1, &engine );
+	ilBindImage( ilEngine );
+	glBindTexture( GL_TEXTURE_2D, engine );
+	gluQuadricTexture( moduleQuadricObject, GL_TRUE );
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
@@ -304,6 +428,7 @@ void displayEnviroment( float angle )
 			glPopMatrix( );
 
 	glPopMatrix( );
+	glFlush( );
 }
 
 /**
@@ -311,179 +436,240 @@ void displayEnviroment( float angle )
  */
 void displayObjects( float frame_no )
 {
-	GLfloat diffuse[] = { 1.0f, 1.0f, 0.0f, 1.0f };
+	GLfloat diffuse[] = { 1.0f, 1.0f, 1.0f, 1.0f };
 	GLdouble plane_eq0[] = { 0.0f, 0.0f, -1.0f, 0.0f };
 
+	glDisable( GL_LIGHTING );
+	glDisable( GL_CULL_FACE );
 
 	glPushMatrix( );
 
-	//glDisable( GL_LIGHTING );
-	glDisable( GL_CULL_FACE );
-
 	glScalef( 0.2f, 0.2f, 0.2f );
 	glRotatef( -90.0f, 0.0f, 1.0f, 0.0f );
+	//glTranslatef( 0.0f, 0.0f, 7.05f );
+
+	glMaterialfv( GL_FRONT_AND_BACK, GL_DIFFUSE, diffuse );
 
 		// caly model rakiery
 		glPushMatrix( );
 
 				glPushMatrix( );
-				// modl napedowy. CZERWONY
-					glColor3f( 1.0f, 0.0f, 0.0f );
+				// modl napedowy
+
+					if ( frame_no >= 360.0 ) {
+						glTranslatef( -6.0f * ( 1 / 0.2f), 0.0f, 0.0f );
+						glRotatef( 2 * frame_no / 360.0f, 0.0f, 1.0f, 0.0f );
+						glTranslatef( 6.0f * ( 1 / 0.2f ), 0.0f, 0.0f );
+					}
 					glTranslatef( 0.0f, 0.0f, -7.05f );
-					gluDisk( qdo, 0.0f, 0.5f, 30, 20 );
-					//gluCylinder( qdo, 0.5f, 0.5f, 2.0f, 30, 30 );
-					glutWireCylinder( 0.5f, 2.0f, 30, 30 );
+
+					glPushMatrix( );
+						glColor3f( 0.0f, 0.0f, 0.0f );
+						gluDisk( qdo, 0.0f, 0.5f, 30, 20 );
+						glColor3f( 1.0f, 1.0f, 1.0f );
+					glPopMatrix( );
+
+					glPushMatrix( );
+						glTranslatef( 0.0f, 0.0f, 2.0f );
+						glColor3f( 0.0f, 0.0f, 0.0f );
+						gluDisk( qdo, 0.0f, 0.5f, 30, 20 );
+						glColor3f( 1.0f, 1.0f, 1.0f );
+					glPopMatrix( );
+
+
+					glPushMatrix( );
+						glBindTexture( GL_TEXTURE_2D, modul2 );
+						gluCylinder( moduleQuadricObject, 0.5f, 0.5f, 2.0f, 30, 30 );
+					glPopMatrix( );
 
 					//silnik gora
 					glPushMatrix( );
 						glTranslatef( 0.0f, 0.65f, 0.0f );
-						//gluCylinder( qdo, 0.1f, 0.1f, 1.5f, 30, 30 );
+						glColor3f( 0.0f, 0.0f, 0.0f );
 						gluDisk( qdo, 0.0f, 0.15f, 30, 10 );
-						glutWireCylinder( 0.15f, 1.5f, 30, 30 );
+						glColor3f( 1.0f, 1.0f, 1.0f );
+						glBindTexture( GL_TEXTURE_2D, engine );
+						gluCylinder( moduleQuadricObject, 0.15f, 0.15f, 1.5f, 30, 30 );
+						glPushMatrix( );
+							glTranslatef( 0.0f, 0.0f, 1.5f );
+							gluDisk( qdo, 0.0f, 0.15f, 30, 10 );
+						glPopMatrix( );
 					glPopMatrix( );
 
 					// silnik prawo gora
 					glPushMatrix( );
 						glTranslatef( 0.468f, 0.468f, 0.0f );
-						//gluCylinder( qdo, 0.1f, 0.1f, 1.5f, 30, 30 );
+						glColor3f( 0.0f, 0.0f, 0.0f );
 						gluDisk( qdo, 0.0f, 0.15f, 30, 10 );
-						glutWireCylinder( 0.15f, 1.5f, 30, 30 );
+						glColor3f( 1.0f, 1.0f, 1.0f );
+						glBindTexture( GL_TEXTURE_2D, engine );
+						gluCylinder( moduleQuadricObject, 0.15f, 0.15f, 1.5f, 30, 30 );
+						glPushMatrix( );
+							glTranslatef( 0.0f, 0.0f, 1.5f );
+							gluDisk( qdo, 0.0f, 0.15f, 30, 10 );
+						glPopMatrix( );
 					glPopMatrix( );
 
 					// silnik lewo gora
 					glPushMatrix( );
 						glTranslatef( -0.468f, 0.468f, 0.0f );
-						//gluCylinder( qdo, 0.1f, 0.1f, 1.5f, 30, 30 );
+						glColor3f( 0.0f, 0.0f, 0.0f );
 						gluDisk( qdo, 0.0f, 0.15f, 30, 10 );
-						glutWireCylinder( 0.15f, 1.5f, 30, 30 );
+						glColor3f( 1.0f, 1.0f, 1.0f );
+						glBindTexture( GL_TEXTURE_2D, engine );
+						gluCylinder( moduleQuadricObject, 0.15f, 0.15f, 1.5f, 30, 30 );
+						glPushMatrix( );
+							glTranslatef( 0.0f, 0.0f, 1.5f );
+							gluDisk( qdo, 0.0f, 0.15f, 30, 10 );
+						glPopMatrix( );
 					glPopMatrix( );
 
 					//silnik dol
 					glPushMatrix( );
 						glTranslatef( 0.0f, -0.65f, 0.0f );
-						//gluCylinder( qdo, 0.1f, 0.1f, 1.5f, 30, 30 );
+						glColor3f( 0.0f, 0.0f, 0.0f );
 						gluDisk( qdo, 0.0f, 0.15f, 30, 10 );
-						glutWireCylinder( 0.15f, 1.5f, 30, 30 );
+						glColor3f( 1.0f, 1.0f, 1.0f );
+						glBindTexture( GL_TEXTURE_2D, engine );
+						gluCylinder( moduleQuadricObject, 0.15f, 0.15f, 1.5f, 30, 30 );
+						glPushMatrix( );
+							glTranslatef( 0.0f, 0.0f, 1.5f );
+							gluDisk( qdo, 0.0f, 0.15f, 30, 10 );
+						glPopMatrix( );
 					glPopMatrix( );
 
 					// silnik prawo dol
 					glPushMatrix( );
 						glTranslatef( 0.468f, -0.468f, 0.0f );
-						//gluCylinder( qdo, 0.1f, 0.1f, 1.5f, 30, 30 );
+						glColor3f( 0.0f, 0.0f, 0.0f );
 						gluDisk( qdo, 0.0f, 0.15f, 30, 10 );
-						glutWireCylinder( 0.15f, 1.5f, 30, 30 );
+						glColor3f( 1.0f, 1.0f, 1.0f );
+						glBindTexture( GL_TEXTURE_2D, engine );
+						gluCylinder( moduleQuadricObject, 0.15f, 0.15f, 1.5f, 30, 30 );
+						glPushMatrix( );
+							glTranslatef( 0.0f, 0.0f, 1.5f );
+							gluDisk( qdo, 0.0f, 0.15f, 30, 10 );
+						glPopMatrix( );
 					glPopMatrix( );
 
 					// silnik lewo dol
 					glPushMatrix( );
 						glTranslatef( -0.468f, -0.468f, 0.0f );
-						//gluCylinder( qdo, 0.1f, 0.1f, 1.5f, 30, 30 );
+						glColor3f( 0.0f, 0.0f, 0.0f );
 						gluDisk( qdo, 0.0f, 0.15f, 30, 10 );
-						glutWireCylinder( 0.15f, 1.5f, 30, 30 );
+						glColor3f( 1.0f, 1.0f, 1.0f );
+						glBindTexture( GL_TEXTURE_2D, engine );
+						gluCylinder( moduleQuadricObject, 0.15f, 0.15f, 1.5f, 30, 30 );
+						glPushMatrix( );
+							glTranslatef( 0.0f, 0.0f, 1.5f );
+							gluDisk( qdo, 0.0f, 0.15f, 30, 10 );
+						glPopMatrix( );
 					glPopMatrix( );
 
 					// silnik prawo
 					glPushMatrix( );
 						glTranslatef( 0.65f, 0.0f, 0.0f );
-						//gluCylinder( qdo, 0.1f, 0.1f, 1.5f, 30, 30 );
+						glColor3f( 0.0f, 0.0f, 0.0f );
 						gluDisk( qdo, 0.0f, 0.15f, 30, 10 );
-						glutWireCylinder( 0.15f, 1.5f, 30, 30 );
+						glColor3f( 1.0f, 1.0f, 1.0f );
+						glBindTexture( GL_TEXTURE_2D, engine );
+						gluCylinder( moduleQuadricObject, 0.15f, 0.15f, 1.5f, 30, 30 );
+						glPushMatrix( );
+							glTranslatef( 0.0f, 0.0f, 1.5f );
+							gluDisk( qdo, 0.0f, 0.15f, 30, 10 );
+						glPopMatrix( );
 					glPopMatrix( );
 
 					//silnik lewo
 					glPushMatrix( );
 						glTranslatef( -0.65f, 0.0f, 0.0f );
-						//gluCylinder( qdo, 0.1f, 0.1f, 1.5f, 30, 30 );
+						glColor3f( 0.0f, 0.0f, 0.0f );
 						gluDisk( qdo, 0.0f, 0.15f, 30, 10 );
-						glutWireCylinder( 0.15f, 1.5f, 30, 30 );
+						glColor3f( 1.0f, 1.0f, 1.0f );
+						glBindTexture( GL_TEXTURE_2D, engine );
+						gluCylinder( moduleQuadricObject, 0.15f, 0.15f, 1.5f, 30, 30 );
+						glPushMatrix( );
+							glTranslatef( 0.0f, 0.0f, 1.5f );
+							gluDisk( qdo, 0.0f, 0.15f, 30, 10 );
+						glPopMatrix( );
 					glPopMatrix( );
 				
-				// modul silnikowy. czerwony.
+				// modul silnikowy.
 				glPopMatrix( );
 
 				glPushMatrix( );
 				// lacznik. bialy.
 					glTranslatef( 0.0f, 0.0f, -4.65f );
 					glPushMatrix( );
-						glColor3f( 1.0f, 1.0f, 1.0f );
 						glClipPlane( GL_CLIP_PLANE0, plane_eq0 );
 						glEnable( GL_CLIP_PLANE0 );
 						glTranslatef( 0.0f, 0.0f, -0.4f );
-						glutWireCone( 0.5f, 2.0f, 30, 20 );
+						glBindTexture( GL_TEXTURE_2D, modul1 );
+						gluCylinder( moduleQuadricObject, 0.5f, 0.0f, 2.0f, 30, 20 );
 						glDisable( GL_CLIP_PLANE0 );
 					glPopMatrix( );
 				// lacznik. bialy.
 				glPopMatrix( );
 
 				glPushMatrix( );
-				// modul paliwa. Zielony
-
+				// modul paliwa.
 					glTranslatef( 0.0f, 0.0f, -4.65f );
-					glColor3f( 0.0f, 1.0f, 0.0f );
-					glutWireCylinder( 0.4f, 3.0f, 30, 30 );
-
-				// modul paliwa. Zielony
+					glBindTexture( GL_TEXTURE_2D, modul );
+					gluCylinder( moduleQuadricObject, 0.4f, 0.4f, 3.0f, 30, 30 );
+				// modul paliwa.
 				glPopMatrix( );
 
 				glPushMatrix( );
-				// modul satelity. Niebieski
-
-				glTranslatef( 0.0f, 0.0f, -1.4f );
+				// modul satelity.
+					glTranslatef( 0.0f, 0.0f, -1.4f );
 					glPushMatrix( );
-						glColor3f( 0.0f, 0.0f, 1.0f );
 						glClipPlane( GL_CLIP_PLANE0, plane_eq0 );
 						glEnable( GL_CLIP_PLANE0 );
 						glTranslatef( 0.0f, 0.0f, -0.25f );
-						glutWireCone( 0.4f, 0.75f, 30, 20 );
+						glBindTexture( GL_TEXTURE_2D, modul1 );
+						gluCylinder( moduleQuadricObject, 0.4f, 0.0f, 0.75f, 30, 20 );
 						glDisable( GL_CLIP_PLANE0 );
 					glPopMatrix( );
-
 				// modul satelity
 				glPopMatrix( );
 
 				glPushMatrix( );
-				// modul satelity. Czerwony
-
+				// modul satelity.
 					glTranslatef( 0.0f, 0.0f, -1.4f );
-					glColor3f( 1.0f, 0.0f, 0.0f );
-					glutWireCylinder( 0.265f, 0.5f, 30, 10 );
-		
-				// modul satelity. Czerwony
+					glBindTexture( GL_TEXTURE_2D, modul2 );
+					gluCylinder( moduleQuadricObject, 0.265f, 0.265f, 0.5f, 30, 10 );
+				// modul satelity.
 				glPopMatrix( );
 
 				glPushMatrix( );
-				// modul satelity. Zielony.
-				
+				// modul satelity.
 					glTranslatef( 0.0f, 0.0f, -0.7f );
 					glPushMatrix( );
-						glColor3f( 0.0f, 1.0f, 0.0f );
 						glClipPlane( GL_CLIP_PLANE0, plane_eq0 );
 						glEnable( GL_CLIP_PLANE0 );
 						glTranslatef( 0.0f, 0.0f, -0.2f );
-						glutWireCone( 0.265f, 0.3f, 30, 10 );
+						//glLightModelf( GL_LIGHT_MODEL_COLOR_CONTROL, GL_SEPARATE_SPECULAR_COLOR );
+						//glMaterialfv( GL_FRONT_AND_BACK, GL_DIFFUSE, diffuse );
+						glBindTexture( GL_TEXTURE_2D, modul1 );
+						gluCylinder( moduleQuadricObject, 0.265f, 0.0f, 0.3f, 30, 10 );
 						glDisable( GL_CLIP_PLANE0 );
 					glPopMatrix( );
-
-				// modul satelity. Zielony.
+				// modul satelity.
 				glPopMatrix( );
 
 				glPushMatrix( );
-				// czubek rakiety. niebieski.
-		
+				// czubek rakiety.
 					glTranslatef( 0.0f, 0.0f, -0.7f );
-					glColor3f( 0.0f, 0.0f, 1.0f );
-					glutWireCylinder( 0.088f, 0.3f, 30, 10 );
-		
-				// czubek rakiety. niebieski.
+					glBindTexture( GL_TEXTURE_2D, modul2 );
+					gluCylinder( moduleQuadricObject, 0.088f, 0.088f, 0.3f, 30, 10 );
+				// czubek rakiety.
 				glPopMatrix( );
 
 				glPushMatrix( );
 				// ostrze czubka. Czerwony.
-				
 					glTranslatef( 0.0f, 0.0f, -0.4f );
-					glColor3f( 1.0f, 0.0f, 0.0f );
-					glutWireCone( 0.088f, 0.4f, 30, 10 );
-
+					glBindTexture( GL_TEXTURE_2D, modul3 );
+					gluCylinder( moduleQuadricObject, 0.088f, 0.0f, 0.4f, 30, 10 );
 				// ostrze czubka. Czerwony.
 				glPopMatrix( );
 
@@ -491,11 +677,11 @@ void displayObjects( float frame_no )
 		glPopMatrix( );
 
 
+	glPopMatrix( );
 
 	glEnable( GL_CULL_FACE );
-	//glEnable( GL_LIGHTING );
-
-	glPopMatrix( );
+	glEnable( GL_LIGHTING );
+	glFlush( );
 }
 
 /**
@@ -516,7 +702,6 @@ void display( )
 	displayEnviroment( (float)frame_no );
 	displayObjects( (float) frame_no );
 
-	glFlush( );
 	glutSwapBuffers( );
 }
 
