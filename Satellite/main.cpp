@@ -62,9 +62,11 @@ GLUquadricObj* moonQuadricObject = gluNewQuadric( );
 GLUquadricObj* cloudsQuadricObject = gluNewQuadric( );
 GLUquadricObj* qdo = gluNewQuadric( );
 GLUquadricObj* moduleQuadricObject = gluNewQuadric( );
+GLUquadricObj* satelliteQuadricObject = gluNewQuadric( );
 
 static float fov = 45.0f;
 static float frame_no = 0.0f;
+static int animation = 0;
 
 static float horizontalAngle = 3.14f;
 static float verticalAngle = 0.0f;
@@ -434,10 +436,12 @@ void displayEnviroment( float angle )
 /**
  * Tutaj wyswietlanie rakiety, etc...
  */
-void displayObjects( float frame_no )
+void displayRocket( float frame_no )
 {
 	GLfloat diffuse[] = { 1.0f, 1.0f, 1.0f, 1.0f };
 	GLdouble plane_eq0[] = { 0.0f, 0.0f, -1.0f, 0.0f };
+	GLdouble plane_eq1[] = { 1.0f, 0.0f, 0.0f, 0.0f };
+	GLdouble plane_eq2[] = { -1.0f, 0.0f, 0.0f, 0.f };
 
 	glDisable( GL_LIGHTING );
 	glDisable( GL_CULL_FACE );
@@ -448,30 +452,30 @@ void displayObjects( float frame_no )
 	glRotatef( -90.0f, 0.0f, 1.0f, 0.0f );
 	//glTranslatef( 0.0f, 0.0f, 7.05f );
 
-	glMaterialfv( GL_FRONT_AND_BACK, GL_DIFFUSE, diffuse );
-
 		// caly model rakiery
 		glPushMatrix( );
 
 				glPushMatrix( );
-				// modl napedowy
+				// modul napedowy
 
+					//oderwanie modulu napedowego.
 					if ( frame_no >= 360.0 ) {
 						glTranslatef( -6.0f * ( 1 / 0.2f), 0.0f, 0.0f );
 						glRotatef( 2 * frame_no / 360.0f, 0.0f, 1.0f, 0.0f );
 						glTranslatef( 6.0f * ( 1 / 0.2f ), 0.0f, 0.0f );
 					}
+
 					glTranslatef( 0.0f, 0.0f, -7.05f );
 
 					glPushMatrix( );
-						glColor3f( 0.0f, 0.0f, 0.0f );
+					glColor3f( ( float ) ( 98.0 / 255.0 ), ( float ) ( 98.0 / 255.0 ), ( float ) ( 98.0 / 255.0 ) );
 						gluDisk( qdo, 0.0f, 0.5f, 30, 20 );
 						glColor3f( 1.0f, 1.0f, 1.0f );
 					glPopMatrix( );
 
 					glPushMatrix( );
 						glTranslatef( 0.0f, 0.0f, 2.0f );
-						glColor3f( 0.0f, 0.0f, 0.0f );
+						glColor3f( ( float ) ( 98.0 / 255.0 ), ( float ) ( 98.0 / 255.0 ), ( float ) ( 98.0 / 255.0 ) );
 						gluDisk( qdo, 0.0f, 0.5f, 30, 20 );
 						glColor3f( 1.0f, 1.0f, 1.0f );
 					glPopMatrix( );
@@ -485,7 +489,7 @@ void displayObjects( float frame_no )
 					//silnik gora
 					glPushMatrix( );
 						glTranslatef( 0.0f, 0.65f, 0.0f );
-						glColor3f( 0.0f, 0.0f, 0.0f );
+						glColor3f( ( float ) ( 98.0 / 255.0 ), ( float ) ( 98.0 / 255.0 ), ( float ) ( 98.0 / 255.0 ) );
 						gluDisk( qdo, 0.0f, 0.15f, 30, 10 );
 						glColor3f( 1.0f, 1.0f, 1.0f );
 						glBindTexture( GL_TEXTURE_2D, engine );
@@ -499,7 +503,7 @@ void displayObjects( float frame_no )
 					// silnik prawo gora
 					glPushMatrix( );
 						glTranslatef( 0.468f, 0.468f, 0.0f );
-						glColor3f( 0.0f, 0.0f, 0.0f );
+						glColor3f( ( float ) ( 98.0 / 255.0 ), ( float ) ( 98.0 / 255.0 ), ( float ) ( 98.0 / 255.0 ) );
 						gluDisk( qdo, 0.0f, 0.15f, 30, 10 );
 						glColor3f( 1.0f, 1.0f, 1.0f );
 						glBindTexture( GL_TEXTURE_2D, engine );
@@ -513,7 +517,7 @@ void displayObjects( float frame_no )
 					// silnik lewo gora
 					glPushMatrix( );
 						glTranslatef( -0.468f, 0.468f, 0.0f );
-						glColor3f( 0.0f, 0.0f, 0.0f );
+						glColor3f( ( float ) ( 98.0 / 255.0 ), ( float ) ( 98.0 / 255.0 ), ( float ) ( 98.0 / 255.0 ) );
 						gluDisk( qdo, 0.0f, 0.15f, 30, 10 );
 						glColor3f( 1.0f, 1.0f, 1.0f );
 						glBindTexture( GL_TEXTURE_2D, engine );
@@ -527,7 +531,7 @@ void displayObjects( float frame_no )
 					//silnik dol
 					glPushMatrix( );
 						glTranslatef( 0.0f, -0.65f, 0.0f );
-						glColor3f( 0.0f, 0.0f, 0.0f );
+						glColor3f( ( float ) ( 98.0 / 255.0 ), ( float ) ( 98.0 / 255.0 ), ( float ) ( 98.0 / 255.0 ) );
 						gluDisk( qdo, 0.0f, 0.15f, 30, 10 );
 						glColor3f( 1.0f, 1.0f, 1.0f );
 						glBindTexture( GL_TEXTURE_2D, engine );
@@ -541,7 +545,7 @@ void displayObjects( float frame_no )
 					// silnik prawo dol
 					glPushMatrix( );
 						glTranslatef( 0.468f, -0.468f, 0.0f );
-						glColor3f( 0.0f, 0.0f, 0.0f );
+						glColor3f( ( float ) ( 98.0 / 255.0 ), ( float ) ( 98.0 / 255.0 ), ( float ) ( 98.0 / 255.0 ) );
 						gluDisk( qdo, 0.0f, 0.15f, 30, 10 );
 						glColor3f( 1.0f, 1.0f, 1.0f );
 						glBindTexture( GL_TEXTURE_2D, engine );
@@ -555,7 +559,7 @@ void displayObjects( float frame_no )
 					// silnik lewo dol
 					glPushMatrix( );
 						glTranslatef( -0.468f, -0.468f, 0.0f );
-						glColor3f( 0.0f, 0.0f, 0.0f );
+						glColor3f( ( float ) ( 98.0 / 255.0 ), ( float ) ( 98.0 / 255.0 ), ( float ) ( 98.0 / 255.0 ) );
 						gluDisk( qdo, 0.0f, 0.15f, 30, 10 );
 						glColor3f( 1.0f, 1.0f, 1.0f );
 						glBindTexture( GL_TEXTURE_2D, engine );
@@ -569,7 +573,7 @@ void displayObjects( float frame_no )
 					// silnik prawo
 					glPushMatrix( );
 						glTranslatef( 0.65f, 0.0f, 0.0f );
-						glColor3f( 0.0f, 0.0f, 0.0f );
+						glColor3f( ( float ) ( 98.0 / 255.0 ), ( float ) ( 98.0 / 255.0 ), ( float ) ( 98.0 / 255.0 ) );
 						gluDisk( qdo, 0.0f, 0.15f, 30, 10 );
 						glColor3f( 1.0f, 1.0f, 1.0f );
 						glBindTexture( GL_TEXTURE_2D, engine );
@@ -583,7 +587,7 @@ void displayObjects( float frame_no )
 					//silnik lewo
 					glPushMatrix( );
 						glTranslatef( -0.65f, 0.0f, 0.0f );
-						glColor3f( 0.0f, 0.0f, 0.0f );
+						glColor3f( ( float ) ( 98.0 / 255.0 ), ( float ) ( 98.0 / 255.0 ), ( float ) ( 98.0 / 255.0 ) );
 						gluDisk( qdo, 0.0f, 0.15f, 30, 10 );
 						glColor3f( 1.0f, 1.0f, 1.0f );
 						glBindTexture( GL_TEXTURE_2D, engine );
@@ -597,80 +601,162 @@ void displayObjects( float frame_no )
 				// modul silnikowy.
 				glPopMatrix( );
 
+
 				glPushMatrix( );
-				// lacznik. bialy.
-					glTranslatef( 0.0f, 0.0f, -4.65f );
+				// modul satelity + czubek.
+
+				// oddalenie sie modulu
+				if ( frame_no > 1500 ) {
+					if ( animation <= 190 ) {
+						glTranslatef( -( animation - 90 ) / 100.0, 0.0f, 0.0f );
+						glTranslatef( 0.0f, 0.0f, -4.65f );
+						glRotatef( -( animation - 90 ) / 7.5f, 0.0f, 1.0f, 0.0f );
+						glTranslatef( 0.0f, 0.0f, 4.65f );
+						++animation;
+					} else {
+						glTranslatef( -1.0f, 0.0f, 0.0f );
+						glTranslatef( 0.0f, 0.0f, -4.65f );
+						glRotatef( -( 100.0 ) / 7.5f, 0.0f, 1.0f, 0.0f );
+						glTranslatef( 0.0f, 0.0f, 4.65f );
+					}
+
+					glTranslatef( -5.0f * ( 1 / 0.2f ), 0.0f, 0.0f );
+					glRotatef( 2 * (frame_no - 1500) / 360.0f, 0.0f, 1.0f, 0.0f );
+					glTranslatef( 5.0f * ( 1 / 0.2f ), 0.0f, 0.0f );
+
+				}
+
 					glPushMatrix( );
-						glClipPlane( GL_CLIP_PLANE0, plane_eq0 );
-						glEnable( GL_CLIP_PLANE0 );
+					// modul z satelita.
+
+						glPushMatrix( );
+						// lacznik. bialy.
+							glTranslatef( 0.0f, 0.0f, -4.65f );						
+							glPushMatrix( );
+								// zatyczka w wezszym koncu
+								glColor4f( ( float ) ( 98.0 / 255.0 ), ( float ) ( 98.0 / 255.0 ), ( float ) ( 98.0 / 255.0 ), 1.0f );
+								gluDisk( qdo, 0.0f, 0.4f, 30, 20 );
+								glColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
+
+								glClipPlane( GL_CLIP_PLANE0, plane_eq0 );
+								glEnable( GL_CLIP_PLANE0 );
+								glTranslatef( 0.0f, 0.0f, -0.4f );
+								glBindTexture( GL_TEXTURE_2D, modul1 );
+								gluCylinder( moduleQuadricObject, 0.5f, 0.0f, 2.0f, 30, 20 );
+								glDisable( GL_CLIP_PLANE0 );
+
+								//zatyczka w szerszym koncu.
+								glColor4f( ( float ) ( 98.0 / 255.0 ), ( float ) ( 98.0 / 255.0 ), ( float ) ( 98.0 / 255.0 ), 1.0f );
+								gluDisk( qdo, 0.0f, 0.5f, 30, 20 );
+								glColor4f( 1.0f, 1.0f, 1.0f , 1.0f );
+							glPopMatrix( );
+						// lacznik. bialy.
+						glPopMatrix( );
+
+						glPushMatrix( );
+						// modul z satelita lewa czesc.
+						
+						
+						// otwieranie pokrywy z satelita.
+						if ( frame_no > 1000 ) {
+							if ( animation <= 91 ) {
+								glTranslatef( 0.0f, -0.4f, 0.0f );
+								glRotatef( -( float ) animation, 0.0f, 0.0f, 1.0f );
+								glTranslatef( 0.0f, 0.4f, 0.0f );
+								++animation;
+							} else {
+								glTranslatef( 0.0f, -0.4f, 0.0f );
+								glRotatef( -90.0f, 0.0f, 0.0f, 1.0f );
+								glTranslatef( 0.0f, 0.4f, 0.0f );
+							}
+						
+						}
+
+							glClipPlane( GL_CLIP_PLANE1, plane_eq1 );
+							glEnable( GL_CLIP_PLANE1 );
+							glTranslatef( 0.0f, 0.0f, -4.65f );
+							glBindTexture( GL_TEXTURE_2D, modul );
+							gluCylinder( moduleQuadricObject, 0.4f, 0.4f, 3.0f, 30, 30 );
+							glColor4f( ( float ) ( 98.0 / 255.0 ), ( float ) ( 98.0 / 255.0 ), ( float ) ( 98.0 / 255.0 ), 1.0f );
+							gluCylinder( moduleQuadricObject, 0.39f, 0.39f, 3.0f, 30, 30 );
+							glColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
+							glDisable( GL_CLIP_PLANE1 );
+						// modul z satelita lewa czesc.
+						glPopMatrix( );
+
+						glPushMatrix( );
+						// modul z satelita prawa czesc.
+							glClipPlane( GL_CLIP_PLANE2, plane_eq2 );
+							glEnable( GL_CLIP_PLANE2 );
+							glTranslatef( 0.0f, 0.0f, -4.65f );
+							glBindTexture( GL_TEXTURE_2D, modul );
+							gluCylinder( moduleQuadricObject, 0.4f, 0.4f, 3.0f, 30, 30 );
+							glColor4f( ( float ) ( 98.0 / 255.0 ), ( float ) ( 98.0 / 255.0 ), ( float ) ( 98.0 / 255.0 ), 1.0f );
+							gluCylinder( moduleQuadricObject, 0.39f, 0.39f, 3.0f, 30, 30 );
+							glColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
+							glDisable( GL_CLIP_PLANE2 );
+						// modul z satelita prawa czesc.
+						glPopMatrix( );
+
+					//modul z satelita.
+					glPopMatrix( );
+
+					glPushMatrix( );
+					// modul czubka.
+						glTranslatef( 0.0f, 0.0f, -1.4f );
+						glPushMatrix( );
+							glClipPlane( GL_CLIP_PLANE0, plane_eq0 );
+							glEnable( GL_CLIP_PLANE0 );
+							glTranslatef( 0.0f, 0.0f, -0.25f );
+							glBindTexture( GL_TEXTURE_2D, modul1 );
+							gluCylinder( moduleQuadricObject, 0.4f, 0.0f, 0.75f, 30, 20 );
+							glDisable( GL_CLIP_PLANE0 );
+							glColor4f( ( float ) ( 98.0 / 255.0 ), ( float ) ( 98.0 / 255.0 ), ( float ) ( 98.0 / 255.0 ), 1.0f );
+							gluDisk( qdo, 0.0f, 0.4f, 30, 20 );
+							glColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
+						glPopMatrix( );
+					// modul czubka
+					glPopMatrix( );
+
+					glPushMatrix( );
+					// modul czubka.
+						glTranslatef( 0.0f, 0.0f, -1.4f );
+						glBindTexture( GL_TEXTURE_2D, modul2 );
+						gluCylinder( moduleQuadricObject, 0.265f, 0.265f, 0.5f, 30, 10 );
+					// modul czubka.
+					glPopMatrix( );
+
+					glPushMatrix( );
+					// modul czubka.
+						glTranslatef( 0.0f, 0.0f, -0.7f );
+						glPushMatrix( );
+							glClipPlane( GL_CLIP_PLANE0, plane_eq0 );
+							glEnable( GL_CLIP_PLANE0 );
+							glTranslatef( 0.0f, 0.0f, -0.2f );
+							glBindTexture( GL_TEXTURE_2D, modul1 );
+							gluCylinder( moduleQuadricObject, 0.265f, 0.0f, 0.3f, 30, 10 );
+							glDisable( GL_CLIP_PLANE0 );
+						glPopMatrix( );
+					// modul czubka.
+					glPopMatrix( );
+
+					glPushMatrix( );
+					// czubek .
+						glTranslatef( 0.0f, 0.0f, -0.7f );
+						glBindTexture( GL_TEXTURE_2D, modul2 );
+						gluCylinder( moduleQuadricObject, 0.088f, 0.088f, 0.3f, 30, 10 );
+					// czubek .
+					glPopMatrix( );
+
+					glPushMatrix( );
+					// ostrze czubka.
 						glTranslatef( 0.0f, 0.0f, -0.4f );
-						glBindTexture( GL_TEXTURE_2D, modul1 );
-						gluCylinder( moduleQuadricObject, 0.5f, 0.0f, 2.0f, 30, 20 );
-						glDisable( GL_CLIP_PLANE0 );
+						glBindTexture( GL_TEXTURE_2D, modul3 );
+						gluCylinder( moduleQuadricObject, 0.088f, 0.0f, 0.4f, 30, 10 );
+					// ostrze czubka.
 					glPopMatrix( );
-				// lacznik. bialy.
-				glPopMatrix( );
 
-				glPushMatrix( );
-				// modul paliwa.
-					glTranslatef( 0.0f, 0.0f, -4.65f );
-					glBindTexture( GL_TEXTURE_2D, modul );
-					gluCylinder( moduleQuadricObject, 0.4f, 0.4f, 3.0f, 30, 30 );
-				// modul paliwa.
-				glPopMatrix( );
-
-				glPushMatrix( );
-				// modul satelity.
-					glTranslatef( 0.0f, 0.0f, -1.4f );
-					glPushMatrix( );
-						glClipPlane( GL_CLIP_PLANE0, plane_eq0 );
-						glEnable( GL_CLIP_PLANE0 );
-						glTranslatef( 0.0f, 0.0f, -0.25f );
-						glBindTexture( GL_TEXTURE_2D, modul1 );
-						gluCylinder( moduleQuadricObject, 0.4f, 0.0f, 0.75f, 30, 20 );
-						glDisable( GL_CLIP_PLANE0 );
-					glPopMatrix( );
-				// modul satelity
-				glPopMatrix( );
-
-				glPushMatrix( );
-				// modul satelity.
-					glTranslatef( 0.0f, 0.0f, -1.4f );
-					glBindTexture( GL_TEXTURE_2D, modul2 );
-					gluCylinder( moduleQuadricObject, 0.265f, 0.265f, 0.5f, 30, 10 );
-				// modul satelity.
-				glPopMatrix( );
-
-				glPushMatrix( );
-				// modul satelity.
-					glTranslatef( 0.0f, 0.0f, -0.7f );
-					glPushMatrix( );
-						glClipPlane( GL_CLIP_PLANE0, plane_eq0 );
-						glEnable( GL_CLIP_PLANE0 );
-						glTranslatef( 0.0f, 0.0f, -0.2f );
-						//glLightModelf( GL_LIGHT_MODEL_COLOR_CONTROL, GL_SEPARATE_SPECULAR_COLOR );
-						//glMaterialfv( GL_FRONT_AND_BACK, GL_DIFFUSE, diffuse );
-						glBindTexture( GL_TEXTURE_2D, modul1 );
-						gluCylinder( moduleQuadricObject, 0.265f, 0.0f, 0.3f, 30, 10 );
-						glDisable( GL_CLIP_PLANE0 );
-					glPopMatrix( );
-				// modul satelity.
-				glPopMatrix( );
-
-				glPushMatrix( );
-				// czubek rakiety.
-					glTranslatef( 0.0f, 0.0f, -0.7f );
-					glBindTexture( GL_TEXTURE_2D, modul2 );
-					gluCylinder( moduleQuadricObject, 0.088f, 0.088f, 0.3f, 30, 10 );
-				// czubek rakiety.
-				glPopMatrix( );
-
-				glPushMatrix( );
-				// ostrze czubka. Czerwony.
-					glTranslatef( 0.0f, 0.0f, -0.4f );
-					glBindTexture( GL_TEXTURE_2D, modul3 );
-					gluCylinder( moduleQuadricObject, 0.088f, 0.0f, 0.4f, 30, 10 );
-				// ostrze czubka. Czerwony.
+				// modul satelity + czubek.
 				glPopMatrix( );
 
 		// caly model rakiety.
@@ -681,6 +767,52 @@ void displayObjects( float frame_no )
 
 	glEnable( GL_CULL_FACE );
 	glEnable( GL_LIGHTING );
+	glFlush( );
+}
+
+/**
+ * Wyswietlanie satelity.
+ */
+void displaySatellite( float frame_no )
+{
+	GLdouble plane_eq0[] = { 0.0f, 0.0f, -1.0f, 0.0f };
+
+	glDisable( GL_LIGHTING );
+
+	glPushMatrix( );
+
+	glPointSize( 5.0f );
+	
+
+	// powiekszenie satelity
+	glScalef( 2.0f, 2.0f, 2.0f );
+
+	glPushMatrix( );
+	// stozek u dolu satelity
+
+	glColor3f( 1.0f, 0.0f, 0.0f );
+
+	glTranslatef( 0.0f, 0.0f, 0.0f );
+
+	glPushMatrix( );
+
+	glClipPlane( GL_CLIP_PLANE0, plane_eq0 );
+	glEnable( GL_CLIP_PLANE0 );
+	glTranslatef( 0.0f, 0.0f, -0.3f );
+	glutWireCone( 0.3f, 0.9f, 30, 20 );
+
+	glDisable( GL_CLIP_PLANE0 );
+
+	glPopMatrix( );
+
+	glColor3f( 1.0f, 1.0f, 1.0f );
+	// stozek u dolu satelity
+	glPopMatrix( );
+
+	glPopMatrix( );
+
+	glEnable( GL_LIGHTING );
+
 	glFlush( );
 }
 
@@ -699,8 +831,9 @@ void display( )
 	gluLookAt( eye.x, eye.y, eye.z, point.x, point.y, point.z, up.x, up.y, up.z );
 	glLightfv( GL_LIGHT0, GL_POSITION, light_position );
 
-	displayEnviroment( (float)frame_no );
-	displayObjects( (float) frame_no );
+	//displayEnviroment( frame_no );
+	//displayRocket( frame_no );
+	displaySatellite( frame_no );
 
 	glutSwapBuffers( );
 }
