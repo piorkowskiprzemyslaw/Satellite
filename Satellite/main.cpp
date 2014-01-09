@@ -4,7 +4,7 @@
  */
 #include <Windows.h>
 #include <GL\glew.h>
-#include <GL\glut.h>
+#include <GL\freeglut.h>
 #include <glm\glm.hpp>
 #include <glm\gtx\transform.hpp>
 #include <IL\il.h>
@@ -20,6 +20,11 @@ char * modul1Location = "modul1.jpg";
 char * modul2Location = "modul2.jpg";
 char * modul3Location = "modul3.jpg";
 char * engineLocation = "engine.jpg";
+char * satellite1Location = "satellite1.jpg";
+char * satellite2Location = "satellite2.jpg";
+char * satellite3Location = "satellite3.jpg";
+char * satellite4Location = "satellite4.jpg";
+char * satellite5Location = "satellite5.jpg";
 
 GLsizei earthImageHeight, earthImageWidth;
 GLsizei moonImageHeight, moonImageWidth;
@@ -29,6 +34,11 @@ GLsizei modul1ImageHeight, modul1ImageWidth;
 GLsizei modul2ImageHeight, modul2ImageWidth;
 GLsizei modul3ImageHeight, modul3ImageWidth;
 GLsizei engineImageHeight, engineImageWidth;
+GLsizei satellite1ImageHeight, satellite1ImageWidth;
+GLsizei satellite2ImageHeight, satellite2ImageWidth;
+GLsizei satellite3ImageHeight, satellite3ImageWidth;
+GLsizei satellite4ImageHeight, satellite4ImageWidth;
+GLsizei satellite5ImageHeight, satellite5ImageWidth;
 
 static GLuint earth;
 static GLuint moon;
@@ -38,6 +48,11 @@ static GLuint modul1;
 static GLuint modul2;
 static GLuint modul3;
 static GLuint engine;
+static GLuint satellite1;
+static GLuint satellite2;
+static GLuint satellite3;
+static GLuint satellite4;
+static GLuint satellite5;
 
 static ILuint ilEarth;
 static ILuint ilMoon;
@@ -47,6 +62,11 @@ static ILuint ilModul1;
 static ILuint ilModul2;
 static ILuint ilModul3;
 static ILuint ilEngine;
+static ILuint ilSatellite1;
+static ILuint ilSatellite2;
+static ILuint ilSatellite3;
+static ILuint ilSatellite4;
+static ILuint ilSatellite5;
 
 ILubyte * earthData;
 ILubyte * moonData;
@@ -56,6 +76,11 @@ ILubyte * module1Data;
 ILubyte * module2Data;
 ILubyte * module3Data;
 ILubyte * engineData;
+ILubyte * satellite1Data;
+ILubyte * satellite2Data;
+ILubyte * satellite3Data;
+ILubyte * satellite4Data;
+ILubyte * satellite5Data;
 
 GLUquadricObj* earthQuadricObject = gluNewQuadric( );
 GLUquadricObj* moonQuadricObject = gluNewQuadric( );
@@ -248,6 +273,46 @@ void initDevIL( )
 	engineImageHeight = ilGetInteger( IL_IMAGE_HEIGHT );
 	engineImageWidth = ilGetInteger( IL_IMAGE_WIDTH );
 	engineData = ilGetData( );
+	/* Wczytanie tekstury satelity1 z pliku. */
+	ilGenImages( 1, &ilSatellite1 );
+	ilBindImage( ilSatellite1 );
+	ilutGLBindTexImage( );
+	ilLoadImage( satellite1Location );
+	satellite1ImageHeight = ilGetInteger( IL_IMAGE_HEIGHT );
+	satellite1ImageWidth = ilGetInteger( IL_IMAGE_WIDTH );
+	satellite1Data = ilGetData( );
+	/* Wczytanie tekstury satelity2 z pliku. */
+	ilGenImages( 1, &ilSatellite2 );
+	ilBindImage( ilSatellite2 );
+	ilutGLBindTexImage( );
+	ilLoadImage( satellite2Location );
+	satellite2ImageHeight = ilGetInteger( IL_IMAGE_HEIGHT );
+	satellite2ImageWidth = ilGetInteger( IL_IMAGE_WIDTH );
+	satellite2Data = ilGetData( );
+	/* Wczytanie tekstury satelity3 z pliku. */
+	ilGenImages( 1, &ilSatellite3 );
+	ilBindImage( ilSatellite3 );
+	ilutGLBindTexImage( );
+	ilLoadImage( satellite3Location );
+	satellite3ImageHeight = ilGetInteger( IL_IMAGE_HEIGHT );
+	satellite3ImageWidth = ilGetInteger( IL_IMAGE_WIDTH );
+	satellite3Data = ilGetData( );
+	/* Wczytanie tekstury satelity4 z pliku. */
+	ilGenImages( 1, &ilSatellite4 );
+	ilBindImage( ilSatellite4 );
+	ilutGLBindTexImage( );
+	ilLoadImage( satellite4Location );
+	satellite4ImageHeight = ilGetInteger( IL_IMAGE_HEIGHT );
+	satellite4ImageWidth = ilGetInteger( IL_IMAGE_WIDTH );
+	satellite4Data = ilGetData( );
+	/* Wczytanie tekstury satelity5 z pliku. */
+	ilGenImages( 1, &ilSatellite5 );
+	ilBindImage( ilSatellite5 );
+	ilutGLBindTexImage( );
+	ilLoadImage( satellite5Location );
+	satellite5ImageHeight = ilGetInteger( IL_IMAGE_HEIGHT );
+	satellite5ImageWidth = ilGetInteger( IL_IMAGE_WIDTH );
+	satellite5Data = ilGetData( );
 }
 
 /**
@@ -364,6 +429,56 @@ void init( )
 	ilBindImage( ilEngine );
 	glBindTexture( GL_TEXTURE_2D, engine );
 	gluQuadricTexture( moduleQuadricObject, GL_TRUE );
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+	ilutGLTexImage( 0 );
+
+	glGenTextures( 1, &satellite1 );
+	ilBindImage( ilSatellite1 );
+	glBindTexture( GL_TEXTURE_2D, satellite1 );
+	gluQuadricTexture( satelliteQuadricObject, GL_TRUE );
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+	ilutGLTexImage( 0 );
+
+	glGenTextures( 1, &satellite2 );
+	ilBindImage( ilSatellite2 );
+	glBindTexture( GL_TEXTURE_2D, satellite2 );
+	gluQuadricTexture( satelliteQuadricObject, GL_TRUE );
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+	ilutGLTexImage( 0 );
+
+	glGenTextures( 1, &satellite3 );
+	ilBindImage( ilSatellite3 );
+	glBindTexture( GL_TEXTURE_2D, satellite3 );
+	gluQuadricTexture( satelliteQuadricObject, GL_TRUE );
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+	ilutGLTexImage( 0 );
+
+	glGenTextures( 1, &satellite4 );
+	ilBindImage( ilSatellite4 );
+	glBindTexture( GL_TEXTURE_2D, satellite4 );
+	gluQuadricTexture( satelliteQuadricObject, GL_TRUE );
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+	ilutGLTexImage( 0 );
+
+	glGenTextures( 1, &satellite5 );
+	ilBindImage( ilSatellite5 );
+	glBindTexture( GL_TEXTURE_2D, satellite5 );
+	gluQuadricTexture( satelliteQuadricObject, GL_TRUE );
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
@@ -775,43 +890,92 @@ void displayRocket( float frame_no )
  */
 void displaySatellite( float frame_no )
 {
-	GLdouble plane_eq0[] = { 0.0f, 0.0f, -1.0f, 0.0f };
+	GLdouble plane_eq0[] = { 0.0, 0.0, -1.0, 0.0 };
+	GLdouble plane_eq1[] = { 0.0, 0.0, 1.0, 0.0 };
 
+	glDisable( GL_CULL_FACE );
 	glDisable( GL_LIGHTING );
 
 	glPushMatrix( );
 
 	glPointSize( 5.0f );
-	
+	glBegin( GL_POINTS );
+	glVertex2f( 0.0f, 0.0f );
+	glEnd( );
+
 
 	// powiekszenie satelity
-	glScalef( 2.0f, 2.0f, 2.0f );
+	//glScalef( 2.0f, 2.0f, 2.0f );
 
-	glPushMatrix( );
-	// stozek u dolu satelity
+		glPushMatrix( );
+		// stozek u dolu satelity
+			glColor3f( 0.12f, 0.12f, 0.12f );
+			glTranslatef( 0.0f, 0.0f, -0.7f );
+			glPushMatrix( );
+				glClipPlane( GL_CLIP_PLANE0, plane_eq0 );
+				glEnable( GL_CLIP_PLANE0 );
+				glTranslatef( 0.0f, 0.0f, -0.2f );
+				gluDisk( qdo, 0.0f, 0.3f, 30, 15 );
+				glColor3f( 1.0f, 1.0f, 1.0f );
+				glBindTexture( GL_TEXTURE_2D, satellite1 );
+				gluCylinder( satelliteQuadricObject, 0.3f, 0.0f, 1.2f, 30, 20 );
+				glDisable( GL_CLIP_PLANE0 );
+			glPopMatrix( );
+		// stozek u dolu satelity
+		glPopMatrix( );
 
-	glColor3f( 1.0f, 0.0f, 0.0f );
 
-	glTranslatef( 0.0f, 0.0f, 0.0f );
+		glPushMatrix( );
+		//walec zielony
+			glColor3f( 0.12f, 0.12f, 0.12f );
+			glTranslatef( 0.0f, 0.0f, -0.4f );
+			gluDisk( qdo, 0.22f, 0.25f, 30, 10 );
+			glColor3f( 1.0f, 1.0f, 1.0f );
+			glTranslatef( 0.0f, 0.0f, -0.3f );
+			glBindTexture( GL_TEXTURE_2D, satellite2 );
+			gluCylinder( satelliteQuadricObject, 0.25f, 0.25f, 0.3f, 30, 20 );
+		//walec zielony
+		glPopMatrix( );
 
-	glPushMatrix( );
+		glPushMatrix( );
+		// walec niebieski.
+			glTranslatef( 0.0f, 0.0f, -0.4f );
+			glBindTexture( GL_TEXTURE_2D, satellite3 );
+			gluCylinder( satelliteQuadricObject, 0.22f, 0.22f, 0.1f, 30, 10 );
+		//walec niebieski.
+		glPopMatrix( );
 
-	glClipPlane( GL_CLIP_PLANE0, plane_eq0 );
-	glEnable( GL_CLIP_PLANE0 );
-	glTranslatef( 0.0f, 0.0f, -0.3f );
-	glutWireCone( 0.3f, 0.9f, 30, 20 );
+		glPushMatrix( );
+		// stozek sciety
+			glTranslatef( 0.0f, 0.0f, -0.2f );
+			glPushMatrix( );
+				glClipPlane( GL_CLIP_PLANE0, plane_eq0 );
+				glEnable( GL_CLIP_PLANE0 );
+				glTranslatef( 0.0f, 0.0f, -0.1f );
+				glBindTexture( GL_TEXTURE_2D, satellite4 );
+				gluCylinder( satelliteQuadricObject, 0.22f, 0.0f, 1.1f, 30, 20 );
+				glDisable( GL_CLIP_PLANE0 );
+			glPopMatrix( );
+		// stozek sciety
+		glPopMatrix( );
 
-	glDisable( GL_CLIP_PLANE0 );
-
-	glPopMatrix( );
-
-	glColor3f( 1.0f, 1.0f, 1.0f );
-	// stozek u dolu satelity
-	glPopMatrix( );
+		glPushMatrix( );
+		// Scieta kolpula.
+			glTranslatef( 0.0f, 0.0f, -0.2f );
+			glPushMatrix( );
+				glClipPlane( GL_CLIP_PLANE1, plane_eq1 );
+				glEnable( GL_CLIP_PLANE1 );
+				glBindTexture( GL_TEXTURE_2D, satellite5 );
+				gluSphere( satelliteQuadricObject, 0.2f, 30, 30 );
+				glDisable( GL_CLIP_PLANE1 );
+			glPopMatrix( );
+		// Scieta kopula.
+		glPopMatrix( );
 
 	glPopMatrix( );
 
 	glEnable( GL_LIGHTING );
+	glEnable( GL_CULL_FACE );
 
 	glFlush( );
 }
@@ -821,7 +985,7 @@ void displaySatellite( float frame_no )
  */
 void display( )
 {
-	if ( frame_no < 720*720 ) frame_no+= 1; else frame_no = 0;
+	if ( frame_no < 10000 ) frame_no+= 1; else frame_no = 0;
 	
 	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
