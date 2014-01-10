@@ -933,12 +933,10 @@ void displaySatellite( float frame_no )
 
 
 	// pomniejszenie satelity
-	//glScalef( 0.2f, 0.2f, 0.2f );
+	glScalef( 0.2f, 0.2f, 0.2f );
 	//umieszczenie satelity w rakiecie.
-	//glRotatef( -90.0f, 0.0f, 1.0f, 0.0f );
-	//glTranslatef( 0.0f, 0.0f, -3.0f );
-
-	glTranslatef( 0.0f, 0.0f, -1.0f );
+	glRotatef( -90.0f, 0.0f, 1.0f, 0.0f );
+	glTranslatef( 0.0f, 0.0f, -3.0f );
 
 		glPushMatrix( );
 		// stozek u dolu satelity
@@ -1006,185 +1004,363 @@ void displaySatellite( float frame_no )
 		glPopMatrix( );
 
 
-	// satelita
-	glPopMatrix( );
-
 		glPushMatrix( );
-		// panel sloneczny
+		// zestaw paneli prawa strona
 
-		//glRotatef( 90.0f, 1.0f, 0.0f, 0.0f );
-		//glRotatef( 90.0f, 0.0f, 0.0f, 1.0f );
-		//glTranslatef( -0.55f, 0.0f, 0.0f );
+			glRotatef( 90.0f, 1.0f, 0.0f, 0.0f );
+			glTranslatef( -0.25f, -0.65f, 0.125f );
+			glRotatef( 90.0f, 0.0f, 0.0f, 1.0f );
 
-		/*
-		if ( frame_no > 5000 ) {
-			if ( satelliteAnimation <= 9000 ) {
-				glRotatef( satelliteAnimation/ 100 , 0.0f, 0.0f, 1.0f );
-				++satelliteAnimation;
-			} else {
-				glRotatef( 90, 0.0f, 0.0f, 1.0f );
+			if ( frame_no > 4000 ) {
+				if ( satelliteAnimation <= 1800 ) {
+					glRotatef( satelliteAnimation/ 20.0f , 0.0f, 0.0f, 1.0f );
+					//++satelliteAnimation;
+				} else {
+					glRotatef( 90, 0.0f, 0.0f, 1.0f );
+				}
 			}
-		}*/
 
+			glPushMatrix( );
+			// obydwa panele i laczniki.
+
+				glBindTexture( GL_TEXTURE_2D, solarpanel );
+					glBegin( GL_QUADS );
+
+						//gora panelu
+						glNormal3f( 0.0f, 1.0f, 0.0f );
+						glTexCoord2f( 0.0f, 0.0f );
+						glVertex3f( 0.0f, 0.02f, 0.0f );
+						glTexCoord2f( 1.0f, 0.0f );
+						glVertex3f( 0.55f, 0.02f, 0.0f );
+						glTexCoord2f( 1.0f, 1.0f );
+						glVertex3f( 0.55f, 0.02f, -0.25f );
+						glTexCoord2f( 0.0f, 1.0f );
+						glVertex3f( 0.0f, 0.02f, -0.25f );
+
+						// dol panelu
+						glNormal3f( 0.0f, -1.0f, 0.0f );
+						glTexCoord2d( 0.0f, 0.0f );
+						glVertex3f( 0.0f, 0.0f, 0.0f );
+						glTexCoord2d( 1.0f, 0.0f );
+						glVertex3f( 0.55f, 0.0f, 0.0f );
+						glTexCoord2d( 1.0f, 1.0f );
+						glVertex3f( 0.55f, 0.0f, -0.25f );
+						glTexCoord2d( 0.0f, 1.0f );
+						glVertex3f( 0.0f, 0.0f, -0.25f );
+		
+						// front panelu
+						glColor3f( 0.12f, 0.12f, 0.12f );
+						glNormal3f( 0.0f, 0.0f, 1.0f );
+						glVertex3f( 0.0f, 0.0f, 0.0f );
+						glVertex3f( 0.55f, 0.0f, 0.0f );
+						glVertex3f( 0.55f, 0.02f, 0.0f );
+						glVertex3f( 0.0f, 0.02f, 0.0f );
+
+						// tyl panelu
+						glNormal3f( 0.0f, 0.0f, -1.0f );
+						glVertex3f( 0.0f, 0.0f, -0.25f );
+						glVertex3f( 0.55f, 0.0f, -0.25f );
+						glVertex3f( 0.55f, 0.02f, -0.25f );
+						glVertex3f( 0.0f, 0.02f, -0.25f );
+
+						// lewa czesc panelu
+						glNormal3f( -1.0f, 0.0f, 0.0f );
+						glVertex3f( 0.0f, 0.0f, 0.0f );
+						glVertex3f( 0.0f, 0.0f, -0.25f );
+						glVertex3f( 0.0f, 0.02f, -0.25f );
+						glVertex3f( 0.0f, 0.02f, 0.0f );
+
+						// prawa czesc panelu
+						glNormal3f( 1.0f, 0.0f, 0.0f );
+						glVertex3f( 0.55f, 0.0f, 0.0f );
+						glVertex3f( 0.55f, 0.0f, -0.25f );
+						glVertex3f( 0.55f, 0.02f, -0.25f );
+						glVertex3f( 0.55f, 0.02f, 0.0f );
+
+					glEnd( );
+				
+					glPushMatrix( );
+					// walec robiacy za laczenie z satelita
+						gluDisk( qdo, 0.0f, 0.01f , 10, 10);
+						glTranslatef( 0.0f, 0.0f, -0.25f );
+						gluCylinder( qdo, 0.01f, 0.01f, 0.25f, 10, 10 );
+						gluDisk( qdo, 0.0f, 0.01f, 10, 10 );
+					// walec robiacy za laczenie z satelita
+					glPopMatrix( );
+
+					glPushMatrix( );
+					// walec robiacy za laczenie z drugim panelem
+						glTranslatef( 0.55f, 0.02f, -0.25f );
+						gluDisk( qdo, 0.0f, 0.015f, 10, 10 );
+						gluCylinder( qdo, 0.015f, 0.015f, 0.25f, 10, 10 );
+						glTranslatef( 0.0f, 0.0f, 0.25f );
+						gluDisk( qdo, 0.0f, 0.015f, 10, 10 );
+					// walec robiacy za laczenie z drugim panelem
+					glPopMatrix( );
+
+					glPushMatrix( );
+					// drugi panel sloneczny.
+
+					glRotatef( 180.0f, 0.0f, 1.0f, 0.0f );
+					glTranslatef( -0.55f, 0.03f, 0.25f );
+
+					if ( frame_no > 4000 ) {
+						if ( satelliteAnimation <= 1800 ) {
+							glRotatef( satelliteAnimation / 10.0f, 0.0f, 0.0f, 1.0f );
+							//++satelliteAnimation;
+						} else {
+							glRotatef( 180.0f, 0.0f, 0.0f, 1.0f );
+						}
+					}
+
+						glColor3f( 1.0f, 1.0f, 1.0f );
+					
+						glBegin( GL_QUADS );
+
+						//gora panelu
+						glNormal3f( 0.0f, 1.0f, 0.0f );
+						glTexCoord2f( 0.0f, 0.0f );
+						glVertex3f( 0.0f, 0.02f, 0.0f );
+						glTexCoord2f( 1.0f, 0.0f );
+						glVertex3f( 0.55f, 0.02f, 0.0f );
+						glTexCoord2f( 1.0f, 1.0f );
+						glVertex3f( 0.55f, 0.02f, -0.25f );
+						glTexCoord2f( 0.0f, 1.0f );
+						glVertex3f( 0.0f, 0.02f, -0.25f );
+
+						// dol panelu
+						glNormal3f( 0.0f, -1.0f, 0.0f );
+						glTexCoord2d( 0.0f, 0.0f );
+						glVertex3f( 0.0f, 0.0f, 0.0f );
+						glTexCoord2d( 1.0f, 0.0f );
+						glVertex3f( 0.55f, 0.0f, 0.0f );
+						glTexCoord2d( 1.0f, 1.0f );
+						glVertex3f( 0.55f, 0.0f, -0.25f );
+						glTexCoord2d( 0.0f, 1.0f );
+						glVertex3f( 0.0f, 0.0f, -0.25f );
+
+						// front panelu
+						glColor3f( 0.12f, 0.12f, 0.12f );
+						glNormal3f( 0.0f, 0.0f, 1.0f );
+						glVertex3f( 0.0f, 0.0f, 0.0f );
+						glVertex3f( 0.55f, 0.0f, 0.0f );
+						glVertex3f( 0.55f, 0.02f, 0.0f );
+						glVertex3f( 0.0f, 0.02f, 0.0f );
+
+						// tyl panelu
+						glNormal3f( 0.0f, 0.0f, -1.0f );
+						glVertex3f( 0.0f, 0.0f, -0.25f );
+						glVertex3f( 0.55f, 0.0f, -0.25f );
+						glVertex3f( 0.55f, 0.02f, -0.25f );
+						glVertex3f( 0.0f, 0.02f, -0.25f );
+
+						// lewa czesc panelu
+						glNormal3f( -1.0f, 0.0f, 0.0f );
+						glVertex3f( 0.0f, 0.0f, 0.0f );
+						glVertex3f( 0.0f, 0.0f, -0.25f );
+						glVertex3f( 0.0f, 0.02f, -0.25f );
+						glVertex3f( 0.0f, 0.02f, 0.0f );
+
+						// prawa czesc panelu
+						glNormal3f( 1.0f, 0.0f, 0.0f );
+						glVertex3f( 0.55f, 0.0f, 0.0f );
+						glVertex3f( 0.55f, 0.0f, -0.25f );
+						glVertex3f( 0.55f, 0.02f, -0.25f );
+						glVertex3f( 0.55f, 0.02f, 0.0f );
+
+						glEnd( );
+
+
+					// drugi panel sloneczny.
+					glPopMatrix( );
+
+				// obydwa panele i lacznik.
+				glPopMatrix( );
+
+				glColor3f( 1.0f, 1.0f, 1.0f );
+		
+		// panel sloneczny prawa strona	
+		glPopMatrix( );
+	
 		glPushMatrix( );
-		// obydwa panele i laczniki.
+		// zestaw paneli lewa strona
 
-			glBindTexture( GL_TEXTURE_2D, solarpanel );
+			glRotatef( -90.0f, 1.0f, 0.0f, 0.0f );
+			glTranslatef( 0.25f, 0.65f, 0.125f );
+			glRotatef( -90.0f, 0.0f, 0.0f, 1.0f );
+
+			if ( frame_no > 4000 ) {
+				if ( satelliteAnimation <= 1800 ) {
+					glRotatef( satelliteAnimation / 20.0f, 0.0f, 0.0f, 1.0f );
+				} else {
+					glRotatef( 90, 0.0f, 0.0f, 1.0f );
+				}
+			}
+
+				glPushMatrix( );
+				// obydwa panele i laczniki.
+
+				glBindTexture( GL_TEXTURE_2D, solarpanel );
 				glBegin( GL_QUADS );
 
-					//gora panelu
-					glNormal3f( 0.0f, 1.0f, 0.0f );
-					glTexCoord2f( 0.0f, 0.0f );
-					glVertex3f( 0.0f, 0.02f, 0.0f );
-					glTexCoord2f( 1.0f, 0.0f );
-					glVertex3f( 0.55f, 0.02f, 0.0f );
-					glTexCoord2f( 1.0f, 1.0f );
-					glVertex3f( 0.55f, 0.02f, -0.25f );
-					glTexCoord2f( 0.0f, 1.0f );
-					glVertex3f( 0.0f, 0.02f, -0.25f );
+				//gora panelu
+				glNormal3f( 0.0f, 1.0f, 0.0f );
+				glTexCoord2f( 0.0f, 0.0f );
+				glVertex3f( 0.0f, 0.02f, 0.0f );
+				glTexCoord2f( 1.0f, 0.0f );
+				glVertex3f( 0.55f, 0.02f, 0.0f );
+				glTexCoord2f( 1.0f, 1.0f );
+				glVertex3f( 0.55f, 0.02f, -0.25f );
+				glTexCoord2f( 0.0f, 1.0f );
+				glVertex3f( 0.0f, 0.02f, -0.25f );
 
-					// dol panelu
-					glNormal3f( 0.0f, -1.0f, 0.0f );
-					glTexCoord2d( 0.0f, 0.0f );
-					glVertex3f( 0.0f, 0.0f, 0.0f );
-					glTexCoord2d( 1.0f, 0.0f );
-					glVertex3f( 0.55f, 0.0f, 0.0f );
-					glTexCoord2d( 1.0f, 1.0f );
-					glVertex3f( 0.55f, 0.0f, -0.25f );
-					glTexCoord2d( 0.0f, 1.0f );
-					glVertex3f( 0.0f, 0.0f, -0.25f );
-		
-					// front panelu
-					glColor3f( 0.12f, 0.12f, 0.12f );
-					glNormal3f( 0.0f, 0.0f, 1.0f );
-					glVertex3f( 0.0f, 0.0f, 0.0f );
-					glVertex3f( 0.55f, 0.0f, 0.0f );
-					glVertex3f( 0.55f, 0.02f, 0.0f );
-					glVertex3f( 0.0f, 0.02f, 0.0f );
+				// dol panelu
+				glNormal3f( 0.0f, -1.0f, 0.0f );
+				glTexCoord2d( 0.0f, 0.0f );
+				glVertex3f( 0.0f, 0.0f, 0.0f );
+				glTexCoord2d( 1.0f, 0.0f );
+				glVertex3f( 0.55f, 0.0f, 0.0f );
+				glTexCoord2d( 1.0f, 1.0f );
+				glVertex3f( 0.55f, 0.0f, -0.25f );
+				glTexCoord2d( 0.0f, 1.0f );
+				glVertex3f( 0.0f, 0.0f, -0.25f );
 
-					// tyl panelu
-					glNormal3f( 0.0f, 0.0f, -1.0f );
-					glVertex3f( 0.0f, 0.0f, -0.25f );
-					glVertex3f( 0.55f, 0.0f, -0.25f );
-					glVertex3f( 0.55f, 0.02f, -0.25f );
-					glVertex3f( 0.0f, 0.02f, -0.25f );
+				// front panelu
+				glColor3f( 0.12f, 0.12f, 0.12f );
+				glNormal3f( 0.0f, 0.0f, 1.0f );
+				glVertex3f( 0.0f, 0.0f, 0.0f );
+				glVertex3f( 0.55f, 0.0f, 0.0f );
+				glVertex3f( 0.55f, 0.02f, 0.0f );
+				glVertex3f( 0.0f, 0.02f, 0.0f );
 
-					// lewa czesc panelu
-					glNormal3f( -1.0f, 0.0f, 0.0f );
-					glVertex3f( 0.0f, 0.0f, 0.0f );
-					glVertex3f( 0.0f, 0.0f, -0.25f );
-					glVertex3f( 0.0f, 0.02f, -0.25f );
-					glVertex3f( 0.0f, 0.02f, 0.0f );
+				// tyl panelu
+				glNormal3f( 0.0f, 0.0f, -1.0f );
+				glVertex3f( 0.0f, 0.0f, -0.25f );
+				glVertex3f( 0.55f, 0.0f, -0.25f );
+				glVertex3f( 0.55f, 0.02f, -0.25f );
+				glVertex3f( 0.0f, 0.02f, -0.25f );
 
-					// prawa czesc panelu
-					glNormal3f( 1.0f, 0.0f, 0.0f );
-					glVertex3f( 0.55f, 0.0f, 0.0f );
-					glVertex3f( 0.55f, 0.0f, -0.25f );
-					glVertex3f( 0.55f, 0.02f, -0.25f );
-					glVertex3f( 0.55f, 0.02f, 0.0f );
+				// lewa czesc panelu
+				glNormal3f( -1.0f, 0.0f, 0.0f );
+				glVertex3f( 0.0f, 0.0f, 0.0f );
+				glVertex3f( 0.0f, 0.0f, -0.25f );
+				glVertex3f( 0.0f, 0.02f, -0.25f );
+				glVertex3f( 0.0f, 0.02f, 0.0f );
+
+				// prawa czesc panelu
+				glNormal3f( 1.0f, 0.0f, 0.0f );
+				glVertex3f( 0.55f, 0.0f, 0.0f );
+				glVertex3f( 0.55f, 0.0f, -0.25f );
+				glVertex3f( 0.55f, 0.02f, -0.25f );
+				glVertex3f( 0.55f, 0.02f, 0.0f );
 
 				glEnd( );
-				
+
 				glPushMatrix( );
 				// walec robiacy za laczenie z satelita
-					gluDisk( qdo, 0.0f, 0.01f , 10, 10);
-					glTranslatef( 0.0f, 0.0f, -0.25f );
-					gluCylinder( qdo, 0.01f, 0.01f, 0.25f, 10, 10 );
-					gluDisk( qdo, 0.0f, 0.01f, 10, 10 );
+				gluDisk( qdo, 0.0f, 0.01f, 10, 10 );
+				glTranslatef( 0.0f, 0.0f, -0.25f );
+				gluCylinder( qdo, 0.01f, 0.01f, 0.25f, 10, 10 );
+				gluDisk( qdo, 0.0f, 0.01f, 10, 10 );
 				// walec robiacy za laczenie z satelita
 				glPopMatrix( );
 
 				glPushMatrix( );
 				// walec robiacy za laczenie z drugim panelem
-					glTranslatef( 0.55f, 0.02f, -0.25f );
-					gluDisk( qdo, 0.0f, 0.015f, 10, 10 );
-					gluCylinder( qdo, 0.015f, 0.015f, 0.25f, 10, 10 );
-					glTranslatef( 0.0f, 0.0f, 0.25f );
-					gluDisk( qdo, 0.0f, 0.015f, 10, 10 );
+				glTranslatef( 0.55f, 0.02f, -0.25f );
+				gluDisk( qdo, 0.0f, 0.015f, 10, 10 );
+				gluCylinder( qdo, 0.015f, 0.015f, 0.25f, 10, 10 );
+				glTranslatef( 0.0f, 0.0f, 0.25f );
+				gluDisk( qdo, 0.0f, 0.015f, 10, 10 );
 				// walec robiacy za laczenie z drugim panelem
 				glPopMatrix( );
 
-				glPushMatrix( );
-				// drugi panel sloneczny.
+					glPushMatrix( );
+					// drugi panel sloneczny.
 
-					if ( false /*satelliteAnimation <= 18000*/ ) {
-						glTranslatef( -0.55f, -0.03f, 0.0f );
-						glRotatef( satelliteAnimation / 100, 0.0f, 0.0f, 1.0f );
-						glTranslatef( 0.55f, 0.03f, 0.0f );
-						++satelliteAnimation;
-					} else {
-						//glTranslatef( -0.55f, -0.03f, 0.0f );
-						//glRotatef( 45.0f, 0.0f, 0.0f, 1.0f );
-						//glTranslatef( 0.55f, 0.03f, 0.0f );
+					glRotatef( 180.0f, 0.0f, 1.0f, 0.0f );
+					glTranslatef( -0.55f, 0.03f, 0.25f );
+
+					if ( frame_no > 4000 ) {
+						if ( satelliteAnimation <= 1800 ) {
+							glRotatef( satelliteAnimation / 10.0f, 0.0f, 0.0f, 1.0f );
+							++satelliteAnimation;
+						} else {
+							glRotatef( 180.0f, 0.0f, 0.0f, 1.0f );
+						}
 					}
 
 					glColor3f( 1.0f, 1.0f, 1.0f );
-					
+
 					glBegin( GL_QUADS );
 
 					//gora panelu
 					glNormal3f( 0.0f, 1.0f, 0.0f );
 					glTexCoord2f( 0.0f, 0.0f );
-					glVertex3f( 0.0f, 0.05f, 0.0f );
+					glVertex3f( 0.0f, 0.02f, 0.0f );
 					glTexCoord2f( 1.0f, 0.0f );
-					glVertex3f( 0.55f, 0.05f, 0.0f );
+					glVertex3f( 0.55f, 0.02f, 0.0f );
 					glTexCoord2f( 1.0f, 1.0f );
-					glVertex3f( 0.55f, 0.05f, -0.25f );
+					glVertex3f( 0.55f, 0.02f, -0.25f );
 					glTexCoord2f( 0.0f, 1.0f );
-					glVertex3f( 0.0f, 0.05f, -0.25f );
+					glVertex3f( 0.0f, 0.02f, -0.25f );
 
 					// dol panelu
 					glNormal3f( 0.0f, -1.0f, 0.0f );
 					glTexCoord2d( 0.0f, 0.0f );
-					glVertex3f( 0.0f, 0.03f, 0.0f );
+					glVertex3f( 0.0f, 0.0f, 0.0f );
 					glTexCoord2d( 1.0f, 0.0f );
-					glVertex3f( 0.55f, 0.03f, 0.0f );
+					glVertex3f( 0.55f, 0.0f, 0.0f );
 					glTexCoord2d( 1.0f, 1.0f );
-					glVertex3f( 0.55f, 0.03f, -0.25f );
+					glVertex3f( 0.55f, 0.0f, -0.25f );
 					glTexCoord2d( 0.0f, 1.0f );
-					glVertex3f( 0.0f, 0.03f, -0.25f );
+					glVertex3f( 0.0f, 0.0f, -0.25f );
 
 					// front panelu
 					glColor3f( 0.12f, 0.12f, 0.12f );
 					glNormal3f( 0.0f, 0.0f, 1.0f );
-					glVertex3f( 0.0f, 0.03f, 0.0f );
-					glVertex3f( 0.55f, 0.03f, 0.0f );
-					glVertex3f( 0.55f, 0.05f, 0.0f );
-					glVertex3f( 0.0f, 0.05f, 0.0f );
+					glVertex3f( 0.0f, 0.0f, 0.0f );
+					glVertex3f( 0.55f, 0.0f, 0.0f );
+					glVertex3f( 0.55f, 0.02f, 0.0f );
+					glVertex3f( 0.0f, 0.02f, 0.0f );
 
 					// tyl panelu
 					glNormal3f( 0.0f, 0.0f, -1.0f );
-					glVertex3f( 0.0f, 0.03f, -0.25f );
-					glVertex3f( 0.55f, 0.03f, -0.25f );
-					glVertex3f( 0.55f, 0.05f, -0.25f );
-					glVertex3f( 0.0f, 0.05f, -0.25f );
+					glVertex3f( 0.0f, 0.0f, -0.25f );
+					glVertex3f( 0.55f, 0.0f, -0.25f );
+					glVertex3f( 0.55f, 0.02f, -0.25f );
+					glVertex3f( 0.0f, 0.02f, -0.25f );
 
 					// lewa czesc panelu
 					glNormal3f( -1.0f, 0.0f, 0.0f );
-					glVertex3f( 0.0f, 0.03f, 0.0f );
-					glVertex3f( 0.0f, 0.03f, -0.25f );
-					glVertex3f( 0.0f, 0.05f, -0.25f );
-					glVertex3f( 0.0f, 0.05f, 0.0f );
+					glVertex3f( 0.0f, 0.0f, 0.0f );
+					glVertex3f( 0.0f, 0.0f, -0.25f );
+					glVertex3f( 0.0f, 0.02f, -0.25f );
+					glVertex3f( 0.0f, 0.02f, 0.0f );
 
 					// prawa czesc panelu
 					glNormal3f( 1.0f, 0.0f, 0.0f );
-					glVertex3f( 0.55f, 0.03f, 0.0f );
-					glVertex3f( 0.55f, 0.03f, -0.25f );
-					glVertex3f( 0.55f, 0.05f, -0.25f );
-					glVertex3f( 0.55f, 0.05f, 0.0f );
+					glVertex3f( 0.55f, 0.0f, 0.0f );
+					glVertex3f( 0.55f, 0.0f, -0.25f );
+					glVertex3f( 0.55f, 0.02f, -0.25f );
+					glVertex3f( 0.55f, 0.02f, 0.0f );
 
 					glEnd( );
 
 
-				// drugi panel sloneczny.
+					// drugi panel sloneczny.
+					glPopMatrix( );
+
+				// obydwa panele i lacznik.
 				glPopMatrix( );
 
-			// obydwa panele i lacznik.
-			glPopMatrix( );
-
 			glColor3f( 1.0f, 1.0f, 1.0f );
-		// panel sloneczny
+
+		// panel sloneczny lewa strona
 		glPopMatrix( );
+
+	// satelita
+	glPopMatrix( );
 
 	glEnable( GL_LIGHTING );
 	glEnable( GL_CULL_FACE );
@@ -1206,8 +1382,8 @@ void display( )
 	/* Transformacje widoku... */
 	gluLookAt( eye.x, eye.y, eye.z, point.x, point.y, point.z, up.x, up.y, up.z );
 
-	//displayEnviroment( frame_no );
-	//displayRocket( frame_no );
+	displayEnviroment( frame_no );
+	displayRocket( frame_no );
 	displaySatellite( frame_no );
 
 	glutSwapBuffers( );
@@ -1248,7 +1424,7 @@ int main( int argc, char** argv )
 	glutInitWindowPosition( 100, 50 );
 	glutInitWindowSize( 800, 600 );
 	glutCreateWindow( "Satellite" );
-	//glutFullScreen( );
+	glutFullScreen( );
 	
 	//uaktualnienie pozycji kursora...
 	windowHeight = glutGet( GLUT_WINDOW_HEIGHT );
