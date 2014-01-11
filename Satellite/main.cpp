@@ -12,8 +12,11 @@
 #include <IL\ilut.h>
 #include <iostream>
 #include <cmath>
+#include <time.h>
+#include "ParticleEngine.h"
 
 #define PI 3.14159265
+#define TIMER_MS 25
 
 char * earthLocation = "earth.jpg";
 char * moonLocation = "moon.jpg";
@@ -125,6 +128,10 @@ static int lastX = 0;
 static int lastY = 0;
 
 static GLfloat light_position[] = { 10.0f, 0.0f, 5.0f, 1.0f };
+
+ParticleEngine * pe;
+
+clock_t lastTime;
 
 /**
  * Handler dla openGL'a do obslugi klawiszy z klawiatury.
@@ -536,6 +543,8 @@ void init( )
 	ilutGLTexImage( 0 );
 
 	glutSetCursor( GLUT_CURSOR_NONE );
+
+	lastTime = clock( );
 }
 
 /**
@@ -602,7 +611,7 @@ void displayEnviroment( float angle )
 				
 	// KSIEZYC
 				glPushMatrix( );
-					glRotatef( -angle / 360.0f - 55.0f, 0.0f, 0.0f, 1.0f );
+					glRotatef( -angle / 360.0f - 45.0f, 0.0f, 0.0f, 1.0f );
 					glTranslatef( 40.0f, 0.0f, 0.0f );
 					glRotatef( angle / 720 - 90, 0.0f, 0.0f, 1.0f );
 					glBindTexture( GL_TEXTURE_2D, moon );
@@ -831,6 +840,18 @@ void displayRocket( float frame_no )
 								glColor4f( ( float ) ( 98.0 / 255.0 ), ( float ) ( 98.0 / 255.0 ), ( float ) ( 98.0 / 255.0 ), 1.0f );
 								gluDisk( qdo, 0.0f, 0.5f, 30, 20 );
 								glColor4f( 1.0f, 1.0f, 1.0f , 1.0f );
+
+								if ( frame_no > 360 && frame_no < 1500 ) {
+									glPushMatrix( );
+										glEnable( GL_BLEND );
+										//glDisable( GL_LIGHTING );
+										glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+										pe->draw( );
+										//glEnable( GL_LIGHTING );
+										glDisable( GL_BLEND );
+									glPopMatrix( );
+								}
+
 							glPopMatrix( );
 						// lacznik. bialy.
 						glPopMatrix( );
@@ -859,7 +880,7 @@ void displayRocket( float frame_no )
 							glTranslatef( 0.0f, 0.0f, -4.65f );
 							glBindTexture( GL_TEXTURE_2D, modul );
 							gluCylinder( moduleQuadricObject, 0.4f, 0.4f, 3.0f, 30, 30 );
-							glColor4f( ( float ) ( 98.0 / 255.0 ), ( float ) ( 98.0 / 255.0 ), ( float ) ( 98.0 / 255.0 ), 1.0f );
+							glColor4f( ( float ) ( 30.0 / 255.0 ), ( float ) ( 30.0 / 255.0 ), ( float ) ( 30.0 / 255.0 ), 1.0f );
 							gluCylinder( moduleQuadricObject, 0.39f, 0.39f, 3.0f, 30, 30 );
 							glColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
 							glDisable( GL_CLIP_PLANE1 );
@@ -873,7 +894,7 @@ void displayRocket( float frame_no )
 							glTranslatef( 0.0f, 0.0f, -4.65f );
 							glBindTexture( GL_TEXTURE_2D, modul );
 							gluCylinder( moduleQuadricObject, 0.4f, 0.4f, 3.0f, 30, 30 );
-							glColor4f( ( float ) ( 98.0 / 255.0 ), ( float ) ( 98.0 / 255.0 ), ( float ) ( 98.0 / 255.0 ), 1.0f );
+							glColor4f( ( float ) ( 30.0 / 255.0 ), ( float ) ( 30.0 / 255.0 ), ( float ) ( 30.0 / 255.0 ), 1.0f );
 							gluCylinder( moduleQuadricObject, 0.39f, 0.39f, 3.0f, 30, 30 );
 							glColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
 							glDisable( GL_CLIP_PLANE2 );
@@ -1461,13 +1482,26 @@ void reshape( GLsizei w, GLsizei h )
 }
 
 /**
+ * uaktualnienie pozycji czasteczek.
+ */
+void update( int value )
+{
+	pe->advance( TIMER_MS / 1000.0f );
+	if ( frame_no < 1500 )
+		glutTimerFunc( TIMER_MS, update, 0 );
+}
+
+/**
  * Rozpoczecie wykonania...
  */
 int main( int argc, char** argv )
 {
+	srand( ( unsigned int ) time( NULL ) );
+	pe = new ParticleEngine( 1500, 0.01, 0.06 );
+
 	glutInit( &argc, argv );
 	glutInitDisplayMode( GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH );
-	glutInitWindowPosition( 100, 50 );
+	glutInitWindowPosition( 0, 0 );
 	glutInitWindowSize( 800, 600 );
 	glutCreateWindow( "Satellite" );
 	glutFullScreen( );
@@ -1487,7 +1521,9 @@ int main( int argc, char** argv )
 	glutKeyboardFunc( handleKeypress );
 	glutSpecialFunc( handleSpecialKeys );
 	glutPassiveMotionFunc( computeFromMouse );
-	
+
+	glutTimerFunc( TIMER_MS, update, 0 );
+
 	glutMainLoop( );
 
 	return 0;
